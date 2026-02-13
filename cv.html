@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV - Igor Carreira</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      display: block;
+      padding: 2rem;
+    }
+    .container {
+      text-align: center;
+      padding: 2em;
+      max-width: 700px;
+      text-align: left;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      text-align: center;
+      margin: 0 0 1.5rem 0;
+    }
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      width: 100%;
+    }
+    header a {
+      color: #444;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+    .download-link {
+      display: inline-flex;
+      align-items: center;
+      background-color: #194D33;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .download-link:hover {
+      background-color: #0f2c1b;
+    }
+    .cv-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #194D33;
+    }
+    .cv-header h1 {
+      font-size: 2rem;
+      margin: 0 0 0.5rem 0;
+      color: #194D33;
+    }
+    .cv-header .contact {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .cv-header .title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #194D33;
+      margin-bottom: 1rem;
+    }
+    .cv-summary {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #1f2937;
+      margin-bottom: 2rem;
+    }
+    .cv-section {
+      margin-bottom: 2rem;
+    }
+    .cv-section h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #194D33;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    .cv-entry {
+      margin-bottom: 1.5rem;
+    }
+    .cv-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.25rem;
+    }
+    .cv-entry-title {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 0.95rem;
+    }
+    .cv-entry-meta {
+      font-size: 0.85rem;
+      color: #666;
+      font-style: italic;
+    }
+    .cv-entry-company {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .cv-entry ul {
+      margin: 0.5rem 0 0 0;
+      padding-left: 1.5rem;
+    }
+    .cv-entry li {
+      font-size: 0.9rem;
+      color: #374151;
+      margin-bottom: 0.25rem;
+      line-height: 1.5;
+    }
+    .cv-section-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .cv-section-list li {
+      font-size: 0.9rem;
+      color: #374151;
+      margin-bottom: 0;
+    }
+    .download-btn {
+      display: inline-block;
+      background-color: #194D33;
+      color: #fff;
+      padding: 0.8rem 1.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      transition: background-color 0.2s;
+    }
+    .download-btn:hover {
+      background-color: #0f2c1b;
+    }
+    @media (max-width: 600px) {
+      .cv-entry-header {
+        flex-direction: column;
+      }
+      .cv-entry-meta {
+        margin-top: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>CV</h1>
+      <p class="subtitle" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <a href="index.html" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;"><img src="back-arrow.svg" alt="Back" width="20" height="20" style="filter: invert(26%) sepia(48%) saturate(603%) hue-rotate(122deg) brightness(97%) contrast(101%);" /> Back</a>
+        <a href="CV.pdf" download class="download-link">Download PDF</a>
+      </p>
+    </header>
+
+    <h1>Igor Carreira</h1>
+    <div class="title">Tech Lead / Senior Developer / Engineering Manager</div>
+    <p class="cv-summary">
+      Seasoned engineer with 15+ years building web systems for SaaS products, marketplaces, and diverse industries. Expert in APIs, distributed systems, high-performance data pipelines, and AI-assisted workflows. Skilled in Ruby, TypeScript, React, Go, Postgres, and cloud-native architectures. In 3 years, improved core system processing speed by ~40%.
+    </p>
+      
+    <div class="cv-section">
+      <h2>Work Experience</h2>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Tech Lead</span>
+          <span class="cv-entry-meta">04/2023 - Present</span>
+        </div>
+        <div class="cv-entry-company">AML RightSource - Remote</div>
+        <ul>
+          <li>Developed scalable TypeScript/React SPAs, delivering high-quality UX while enabling rapid iteration and feature delivery.</li>
+          <li>Led a cross-functional team to develop AI-powered investigative web and data workflows, aiming to reduce analyst investigation lead time by 50% within 18 months.</li>
+          <li>Modernized financial analytics web platform (Ruby/React), automating data workflows, enhancing UX, system performance. Optimised data ingestion speed by 40% within 3 quarters.</li>
+          <li>Leading the transition of the technology stack during company acquisition and merger, ensuring seamless handover and operational continuity (planned step-down Apr 2026).</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Engineering Manager</span>
+          <span class="cv-entry-meta">01/2022 - 01/2023</span>
+        </div>
+        <div class="cv-entry-company">Oyster HR - Remote</div>
+        <ul>
+          <li>Led technical delivery and mentored 13 engineers in a fully remote, product-led environment. Improved sprint delivery efficiency by 25% within 3 months. Championed Kanban adoption.</li>
+          <li>Delivered HRIS, ATS, and time-tracking modules for boosted sales effectiveness. Delivered contract workflows for improved user workflow efficiency.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Head of Engineering</span>
+          <span class="cv-entry-meta">09/2016 - 01/2022</span>
+        </div>
+        <div class="cv-entry-company">Lavanda - London Area, United Kingdom</div>
+        <ul>
+          <li>Led technical strategy, architecture, and delivery across multiple web and API projects, including the central PMS, a public developer API, and direct booking websites.</li>
+          <li>Mentored a distributed team, fostering collaboration and supporting growth. Led the hiring of ~35 engineers over 4 years. Increased delivery throughput by 30% within 3 quarters.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Lead Developer</span>
+          <span class="cv-entry-meta">09/2016 - 01/2022</span>
+        </div>
+        <div class="cv-entry-company">Lavanda - Greater London</div>
+        <ul>
+          <li>Developed the initial platform of a multi-award-winning property management system, through PWAs and robust Ruby services, including API integrations with 3rd-party OTA platforms.</li>
+          <li>Championed XP and engineering good practices. Laid the foundation for CI/CD pipelines and TDD adoption within the engineering team.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Polyglot Developer</span>
+          <span class="cv-entry-meta">11/2014 - 09/2016</span>
+        </div>
+        <div class="cv-entry-company">Your Golf Travel Limited - London Area, United Kingdom</div>
+        <ul>
+          <li>Worked on the internal quoting system. Built internal booking system with Ruby/Go microservices, for improved operational efficiency. Integrated with booking APIs (e.g: Expedia).</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Full Stack Developer</span>
+          <span class="cv-entry-meta">05/2009 - 10/2014</span>
+        </div>
+        <div class="cv-entry-company">PT Inovação - Aveiro</div>
+        <ul>
+          <li>Developed Ruby/Rails DSL framework; built a portfolio manager integrated with campaign systems; designed RBAC; led adoption of MongoDB, RSpec, Capybara.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Consultant</span>
+          <span class="cv-entry-meta">07/2007 - 05/2009</span>
+        </div>
+        <div class="cv-entry-company">Deloitte - Lisbon</div>
+        <ul>
+          <li>Promoted to Consultant; conducted tech stack research, high-level architecture design, and bespoke Oracle eBS extensions across Public Sector, Media, and Transportation projects.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Analyst</span>
+          <span class="cv-entry-meta">07/2007 - 05/2009</span>
+        </div>
+        <div class="cv-entry-company">Deloitte - Lisbon</div>
+        <ul>
+          <li>Entry-level Analyst; designed and implemented Oracle SOA Web Services and extensions for multiple Public Sector and Healthcare integrations.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">PHP Web Developer</span>
+          <span class="cv-entry-meta">01/2007 - 02/2008</span>
+        </div>
+        <div class="cv-entry-company">ÀVendaPeloDono (retired property portal) - Aveiro, Portugal</div>
+        <ul>
+          <li>Full-stack development of property portal features including account management, listings, scheduling, payments, and long-term maintenance.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cv-section">
+      <h2>Education</h2>
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-title">Computer and Telematics Engineering</span>
+          <span class="cv-entry-meta">01/2002 - 01/2007</span>
+        </div>
+        <div class="cv-entry-company">Universidade de Aveiro - Networks and Computer Science</div>
+      </div>
+    </div>
+
+    <div class="cv-section">
+      <h2>Certifications</h2>
+      <ul class="cv-section-list">
+        <li>The Six Morning Habits of High Performers</li>
+        <li>Ethical Hacking with JavaScript</li>
+        <li>Getting Things Done</li>
+        <li>Extreme Productivity (Blinkist Summary)</li>
+        <li>ITIL Foundations v3</li>
+      </ul>
+    </div>
+
+    <div class="cv-section">
+      <h2>Publications</h2>
+      <p style="font-size: 0.9rem; color: #374151;">
+        Sistema de Gestão de Informação Clínica na área da Hemofilia: implementação de um protótipo vertical
+      </p>
+    </div>
+
+    <div class="cv-section">
+      <h2>Skills</h2>
+      <div style="font-size: 0.9rem; color: #374151;">
+        <p><strong>Top Skills:</strong> Software Development, Software Engineering, Web Development</p>
+        <p><strong>Languages:</strong> English (Full Professional), French, Portuguese (Native or Bilingual), Spanish</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

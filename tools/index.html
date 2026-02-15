@@ -4,30 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tools</title>
-  <link rel="stylesheet" href="../style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    .btn {
-      padding: 3.2em 1.5em !important;
-      font-size: 1.1rem;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#194D33',
+            'brand-dark': '#0f2c1b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-  <div class="container">
+<body class="m-0 flex min-h-screen items-center justify-center bg-white font-sans text-brand">
+  <div class="w-full max-w-[800px] p-8 text-center">
     <header>
-      <h1>Tools</h1>
-      <p class="subtitle"><a href="../index.html" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;"><img src="../back-arrow.svg" alt="Back" width="20" height="20" style="filter: invert(26%) sepia(48%) saturate(603%) hue-rotate(122deg) brightness(97%) contrast(101%);" /> Back</a></p>
+      <h1 class="mb-1 text-5xl">Tools</h1>
+      <p class="mb-8 text-[1.2em] text-[#444]"><a href="../index.html" class="inline-flex items-center gap-2 no-underline"><img src="../back-arrow.svg" alt="Back" width="20" height="20" class="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back</a></p>
     </header>
 
     <main>
-      <div class="buttons">
-        <a href="retrospective_template.html" class="btn">Retrospective Template</a>
-        <a href="#" class="btn disabled">Running Planner</a>
+      <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <a href="retrospective_template.html" class="rounded-lg bg-brand px-6 py-[3.2em] text-[1.1rem] font-semibold text-white transition duration-200 hover:scale-105 hover:bg-brand-dark">Retrospective Template</a>
+        <a href="#" class="rounded-lg bg-gray-300 cursor-not-allowed px-6 py-[3.2em] text-[1.1rem] font-semibold text-white">Marathon Prep Builder</a>
       </div>
     </main>
 
-    <footer>
+    <footer class="mt-8 text-sm text-[#666]">
       <p>© 2026 Igor Carreira. All rights reserved.</p>
     </footer>
   </div>

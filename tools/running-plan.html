@@ -1,37 +1,728 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>React Marathon Prep Builder</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f7f8fa;
-      color: #1f2937;
-      line-height: 1.6;
-      margin: 0;
-      padding: 2rem;
-    }
-    nav a {
-      margin-right: 1rem;
-      color: #3b82f6;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marathon Prep Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#194D33',
+            'brand-dark': '#0f2c1b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
-  <nav>
-    <a href="../index.html">Home</a>
-    <a href="index.html">TOOLS</a>
-  </nav>
+<body class="m-0 block bg-white px-4 py-8 font-sans text-brand sm:px-8">
+  <div id="root"></div>
 
-  <h1>React Marathon Prep Builder</h1>
-  <p>This page is a placeholder for the marathon prep builder tool. We will implement the React-based planner here soon.</p>
+  <script type="text/babel">
+window.RunningPlan = window.RunningPlan || {};
 
+window.RunningPlan.DISTANCE_OPTIONS = [
+  { value: '10k', label: '10km', km: 10, minDays: 28 },
+  { value: 'half', label: 'Half marathon', km: 21.1, minDays: 42 },
+  { value: 'full', label: 'Full marathon', km: 42.2, minDays: 90 }
+];
+
+window.RunningPlan.STRENGTH_EXERCISES = [
+  'Squats',
+  'Walking lunges',
+  'Step-ups',
+  'Single-leg RDL',
+  'Calf raises',
+  'Hip thrusts',
+  'Glute bridges',
+  'Wall sits',
+  'Bulgarian split squats',
+  'Box jumps'
+];
+
+window.RunningPlan.DISCLAIMER_TITLE = 'Important health and safety disclaimer';
+window.RunningPlan.DISCLAIMER_LINES = [
+  'This tool is for general informational and educational perusal only. It is not medical advice, diagnosis, treatment, physiotherapy guidance, or coaching instruction.',
+  'This planner may be more useful for people who are already active and very fit, but it can still be inappropriate or unsafe for your personal context.',
+  'You must consult a licensed physician and a qualified physiotherapist or certified trainer before starting, changing, or intensifying training.',
+  'By proceeding, you acknowledge that any use is fully at your own risk. The site owner, author, and contributors disclaim all liability for injuries, health events, losses, or damages of any kind resulting from use or misuse of this tool.'
+];
+
+window.RunningPlan.RISK_ACCEPTED_BANNER = 'By using this, you expressly acknowledge and accept all risks, and agree that you do so entirely at your own responsibility.';
+window.RunningPlan.TIME_TRAVEL_MSG = 'Good luck time travelling :) ';
+window.RunningPlan.AMBITIOUS_PLAN_MSG = "This app isn’t capable (yet) of creating a plan that ambitious. :)";
+  </script>
+
+  <script type="text/babel">
+window.RunningPlan = window.RunningPlan || {};
+
+window.RunningPlan.utils = {
+  getDistanceMeta(distanceValue) {
+    return (window.RunningPlan.DISTANCE_OPTIONS || []).find((d) => d.value === distanceValue) || null;
+  },
+
+  parseExpectedTime(timeStr) {
+    const match = String(timeStr || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return null;
+
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes) || minutes > 59) return null;
+
+    return (hours * 60) + minutes;
+  },
+
+  getDaysRemaining(dateStr) {
+    if (!dateStr) {
+      return { daysRemaining: null, isPast: false };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const eventDate = new Date(dateStr);
+    eventDate.setHours(0, 0, 0, 0);
+
+    const diffMs = eventDate - today;
+    const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    return {
+      daysRemaining: days,
+      isPast: days < 0
+    };
+  },
+
+  getValidationMessage({ dateStr, distanceValue }) {
+    const { daysRemaining, isPast } = this.getDaysRemaining(dateStr);
+
+    if (dateStr && isPast) {
+      return window.RunningPlan.TIME_TRAVEL_MSG;
+    }
+
+    if (!distanceValue || daysRemaining === null || isPast) {
+      return null;
+    }
+
+    const distance = this.getDistanceMeta(distanceValue);
+    if (!distance) {
+      return null;
+    }
+
+    if (daysRemaining < distance.minDays) {
+      return window.RunningPlan.AMBITIOUS_PLAN_MSG;
+    }
+
+    return null;
+  },
+
+  buildWeeklyPlan({ daysRemaining, expectedTimeMinutes, trainingDaysPerWeek }) {
+    const totalWeeks = Math.floor(daysRemaining / 7);
+    const trainingDays = Number(trainingDaysPerWeek);
+    const plan = [];
+
+    const minSlowRunDuration = Math.round(expectedTimeMinutes * 0.3);
+    const maxSlowRunDuration = expectedTimeMinutes;
+
+    const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    for (let w = 0; w < totalWeeks; w += 1) {
+      const week = [];
+      const intensityFactor = 1 + (w / Math.max(totalWeeks, 1)) * 0.5;
+      const weeksUntilRace = totalWeeks - w;
+
+      const hiitDuration = 30 + (w * 5);
+      const slowRunDuration = minSlowRunDuration + Math.round((maxSlowRunDuration - minSlowRunDuration) * (w / Math.max(totalWeeks - 1, 1)));
+
+      let sessionConfigs = [];
+
+      if (trainingDays === 3) {
+        sessionConfigs = [
+          { type: 'Strength Training', day: 'Monday' },
+          { type: 'HIIT Indoor Cycling', day: 'Wednesday' },
+          { type: 'Outdoor Slow Run', day: 'Saturday' }
+        ];
+      } else if (trainingDays === 4) {
+        sessionConfigs = [
+          { type: 'Strength Training', day: 'Monday' },
+          { type: 'HIIT Indoor Cycling', day: 'Tuesday' },
+          { type: 'Outdoor Slow Run', day: 'Thursday' },
+          { type: 'Outdoor Sprint Strides', day: 'Saturday' }
+        ];
+      } else if (trainingDays === 5) {
+        sessionConfigs = [
+          { type: 'Strength Training', day: 'Monday' },
+          { type: 'Long Indoor Cycling', day: 'Tuesday' },
+          { type: 'HIIT Indoor Cycling', day: 'Wednesday' },
+          { type: 'Outdoor Slow Run', day: 'Thursday' },
+          { type: 'Outdoor Sprint Strides', day: 'Saturday' }
+        ];
+      } else if (trainingDays === 6) {
+        sessionConfigs = [
+          { type: 'Strength Training', day: 'Monday' },
+          { type: 'Long Indoor Cycling', day: 'Tuesday' },
+          { type: 'HIIT Indoor Cycling', day: 'Wednesday' },
+          { type: 'Outdoor Slow Run', day: 'Thursday' },
+          { type: 'HIIT Indoor Cycling', day: 'Friday' },
+          { type: 'Outdoor Sprint Strides', day: 'Saturday' }
+        ];
+      }
+
+      allDays.forEach((day) => {
+        const sessionConfig = sessionConfigs.find((s) => s.day === day);
+
+        if (!sessionConfig) {
+          week.push({ day, type: 'Rest Day', duration: 0, description: null, exercises: null });
+          return;
+        }
+
+        if (sessionConfig.type === 'Outdoor Slow Run' && weeksUntilRace <= 2) {
+          week.push({ day, type: 'Rest Day', duration: 0, description: null, exercises: null });
+          return;
+        }
+
+        let duration = 0;
+        let description = null;
+        let exercises = null;
+
+        if (sessionConfig.type === 'Strength Training') {
+          exercises = window.RunningPlan.STRENGTH_EXERCISES;
+        } else if (sessionConfig.type === 'HIIT Indoor Cycling') {
+          duration = hiitDuration;
+          description = 'High Intensity Interval Training';
+        } else if (sessionConfig.type === 'Long Indoor Cycling') {
+          duration = Math.round((60 + Math.random() * 10) * intensityFactor);
+          description = 'Steady long ride';
+        } else if (sessionConfig.type === 'Outdoor Slow Run') {
+          duration = weeksUntilRace === 1 ? Math.round(slowRunDuration * 0.75) : slowRunDuration;
+          description = 'Easy pace';
+        } else if (sessionConfig.type === 'Outdoor Sprint Strides') {
+          description = '6 x 200m, rest 2 mins in between';
+        }
+
+        week.push({ day, type: sessionConfig.type, duration, description, exercises });
+      });
+
+      plan.push(week);
+    }
+
+    return plan;
+  }
+};
+  </script>
+
+  <script type="text/babel">
+window.RunningPlan = window.RunningPlan || {};
+
+window.RunningPlan.DisclaimerGate = function DisclaimerGate({ onAccept, onDecline }) {
+  const [checked, setChecked] = React.useState(false);
+
+  return (
+    <div className="mx-auto w-full max-w-[800px] text-left">
+      <a href="index.html" className="mb-8 inline-flex items-center gap-2 text-[1.2em] text-[#444] no-underline">
+        <img src="../back-arrow.svg" alt="Back" width="20" height="20" className="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back
+      </a>
+
+      <header className="mb-8">
+        <h1 className="mb-2 text-5xl font-bold text-brand">Marathon Prep Builder</h1>
+        <p className="m-0 text-[1.2em] text-[#444]">Please read before using this tool.</p>
+      </header>
+
+      <section className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm leading-relaxed text-red-900">
+        <h2 className="mb-4 text-xl font-bold">{window.RunningPlan.DISCLAIMER_TITLE}</h2>
+        <div className="space-y-3">
+          {window.RunningPlan.DISCLAIMER_LINES.map((line, idx) => (
+            <p key={idx} className="m-0">{line}</p>
+          ))}
+        </div>
+
+        <label className="mt-6 flex items-start gap-3 rounded-lg border border-red-200 bg-white p-4">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4"
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+          <span className="text-sm">
+            I have read and understood this disclaimer and I choose to proceed at my own risk.
+          </span>
+        </label>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={onDecline}
+            className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100"
+          >
+            Decline
+          </button>
+          <button
+            type="button"
+            disabled={!checked}
+            onClick={onAccept}
+            className="rounded-lg bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-400"
+          >
+            Accept and continue
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+};
+  </script>
+
+  <script type="text/babel">
+window.RunningPlan = window.RunningPlan || {};
+
+window.RunningPlan.StepWizard = function StepWizard({
+  form,
+  daysRemaining,
+  validationMessage,
+  currentStep,
+  onEditStep,
+  onDateChange,
+  onDistanceChange,
+  onExpectedTimeChange,
+  onTrainingDaysChange,
+  onGenerate,
+  canGenerate
+}) {
+  const distanceMeta = window.RunningPlan.utils.getDistanceMeta(form.distance);
+
+  const StepSummary = ({ step, label, value }) => (
+    <div className="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+      <div>
+        <div className="text-xs uppercase tracking-wide text-gray-500">Step {step}</div>
+        <div className="text-sm font-semibold text-gray-800">{label}</div>
+        <div className="text-sm text-gray-700">{value}</div>
+      </div>
+      <button
+        type="button"
+        onClick={() => onEditStep(step)}
+        className="rounded-md border border-gray-300 bg-white p-2 text-gray-700 transition hover:bg-gray-100"
+        aria-label={`Edit step ${step}`}
+      >
+        ✎
+      </button>
+    </div>
+  );
+
+  return (
+    <div>
+      {currentStep > 1 ? (
+        <StepSummary
+          step={1}
+          label="Event date"
+          value={`${form.eventDate} (${daysRemaining} days to go)`}
+        />
+      ) : (
+        <section className="mb-8 rounded-lg border border-gray-200 p-5">
+          <h2 className="mb-3 text-lg font-bold text-brand">Step 1: Event date</h2>
+          <label htmlFor="eventDate" className="mb-2 block text-sm font-semibold text-brand">When is your running event?</label>
+          <input
+            type="date"
+            id="eventDate"
+            value={form.eventDate}
+            onChange={(e) => onDateChange(e.target.value)}
+            className="w-full rounded-lg border border-gray-200 p-3 text-base"
+          />
+        </section>
+      )}
+
+      {validationMessage === window.RunningPlan.TIME_TRAVEL_MSG && (
+        <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
+          {window.RunningPlan.TIME_TRAVEL_MSG}
+        </div>
+      )}
+
+      {currentStep > 2 ? (
+        <StepSummary
+          step={2}
+          label="Distance"
+          value={distanceMeta ? distanceMeta.label : ''}
+        />
+      ) : (
+        currentStep >= 2 && (
+          <section className="mb-8 rounded-lg border border-gray-200 p-5">
+            <h2 className="mb-3 text-lg font-bold text-brand">Step 2: Distance</h2>
+            <label htmlFor="distance" className="mb-2 block text-sm font-semibold text-brand">Choose your distance</label>
+            <select
+              id="distance"
+              value={form.distance}
+              onChange={(e) => onDistanceChange(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 p-3 text-base"
+            >
+              <option value="">Select distance</option>
+              {window.RunningPlan.DISTANCE_OPTIONS.map((distance) => (
+                <option key={distance.value} value={distance.value}>{distance.label}</option>
+              ))}
+            </select>
+            {daysRemaining !== null && form.distance && validationMessage !== window.RunningPlan.TIME_TRAVEL_MSG && (
+              <p className="mt-3 text-sm text-gray-600">
+                Minimum prep for {distanceMeta.label}: {distanceMeta.minDays} days.
+              </p>
+            )}
+          </section>
+        )
+      )}
+
+      {validationMessage === window.RunningPlan.AMBITIOUS_PLAN_MSG && (
+        <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
+          {window.RunningPlan.AMBITIOUS_PLAN_MSG}
+        </div>
+      )}
+
+      {currentStep > 3 ? (
+        <StepSummary
+          step={3}
+          label="Expected finish time"
+          value={form.expectedTime}
+        />
+      ) : (
+        currentStep >= 3 && (
+          <section className="mb-8 rounded-lg border border-gray-200 p-5">
+            <h2 className="mb-3 text-lg font-bold text-brand">Step 3: Target time</h2>
+            <label htmlFor="expectedTime" className="mb-2 block text-sm font-semibold text-brand">Expected finish time (hours:minutes)</label>
+            <input
+              type="text"
+              id="expectedTime"
+              placeholder="e.g., 1:10 for 10km, 1:45 for half, 4:30 for full"
+              value={form.expectedTime}
+              onChange={(e) => onExpectedTimeChange(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 p-3 text-base"
+            />
+          </section>
+        )
+      )}
+
+      {currentStep > 4 ? (
+        <StepSummary
+          step={4}
+          label="Training days per week"
+          value={`${form.trainingDaysPerWeek} days`}
+        />
+      ) : (
+        currentStep >= 4 && (
+          <section className="mb-8 rounded-lg border border-gray-200 p-5">
+            <h2 className="mb-3 text-lg font-bold text-brand">Step 4: Weekly frequency</h2>
+            <label htmlFor="trainingDays" className="mb-2 block text-sm font-semibold text-brand">How many days per week will you train?</label>
+            <select
+              id="trainingDays"
+              value={form.trainingDaysPerWeek}
+              onChange={(e) => onTrainingDaysChange(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 p-3 text-base"
+            >
+              <option value="">Select training days</option>
+              <option value="3">3 days</option>
+              <option value="4">4 days</option>
+              <option value="5">5 days</option>
+              <option value="6">6 days</option>
+            </select>
+          </section>
+        )
+      )}
+
+      {currentStep >= 5 && (
+        <button
+          type="button"
+          onClick={onGenerate}
+          disabled={!canGenerate}
+          className="w-full rounded-lg bg-brand px-8 py-4 text-base font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          Generate Training Plan
+        </button>
+      )}
+    </div>
+  );
+};
+  </script>
+
+  <script type="text/babel">
+window.RunningPlan = window.RunningPlan || {};
+
+window.RunningPlan.PlanResults = function PlanResults({ plan, distanceLabel, expectedTime, daysRemaining, onStartOver }) {
+  return (
+    <section className="mt-10">
+      <div className="mb-6 print:hidden">
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100"
+        >
+          Print plan
+        </button>
+      </div>
+
+      <h2 className="mb-2 text-3xl font-bold text-brand">Your {distanceLabel} Training Plan</h2>
+      <p className="mb-6 text-[#666]">Target: {expectedTime} finish time | {daysRemaining} days to race day</p>
+
+      {plan.map((week, weekIndex) => (
+        <div key={weekIndex} className="mb-6 rounded-lg border border-gray-200 bg-white p-6 break-inside-avoid">
+          <div className="mb-4 text-lg font-bold text-brand">Week {weekIndex + 1}</div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {week.map((session, dayIndex) => (
+              <div key={dayIndex} className="rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4">
+                <div className="mb-2 font-semibold text-brand">{session.day}</div>
+                <div className="mb-1 font-semibold">{session.type}</div>
+                {session.type === 'Strength Training' && session.exercises ? (
+                  <div className="mt-2 text-sm text-[#666]">
+                    <strong>Exercises:</strong>
+                    <div className="mt-1">{session.exercises.slice(0, 4).join(', ')}</div>
+                  </div>
+                ) : session.description ? (
+                  <div className="mt-2 text-sm text-[#666]">
+                    <div>{session.description}</div>
+                    {session.duration > 0 && <div className="mt-1 font-semibold">{session.duration} minutes</div>}
+                  </div>
+                ) : session.duration > 0 ? (
+                  <div className="text-sm text-[#666]">{session.duration} minutes</div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        className="mt-4 w-full rounded-lg bg-brand px-8 py-4 text-base font-semibold text-white transition hover:bg-brand-dark print:hidden"
+        onClick={onStartOver}
+      >
+        Start Over
+      </button>
+    </section>
+  );
+};
+  </script>
+
+  <script type="text/babel">
+window.RunningPlan = window.RunningPlan || {};
+
+const { useMemo, useState } = React;
+
+function MarathonPrepBuilderApp() {
+  const [disclaimerStatus, setDisclaimerStatus] = useState('pending');
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const [form, setForm] = useState({
+    eventDate: '',
+    distance: '',
+    expectedTime: '',
+    trainingDaysPerWeek: ''
+  });
+
+  const [plan, setPlan] = useState(null);
+  const [planError, setPlanError] = useState(null);
+
+  const dateInfo = useMemo(
+    () => window.RunningPlan.utils.getDaysRemaining(form.eventDate),
+    [form.eventDate]
+  );
+
+  const validationMessage = useMemo(
+    () => window.RunningPlan.utils.getValidationMessage({ dateStr: form.eventDate, distanceValue: form.distance }),
+    [form.eventDate, form.distance]
+  );
+
+  const expectedTimeMinutes = useMemo(
+    () => window.RunningPlan.utils.parseExpectedTime(form.expectedTime),
+    [form.expectedTime]
+  );
+
+  const distanceMeta = useMemo(
+    () => window.RunningPlan.utils.getDistanceMeta(form.distance),
+    [form.distance]
+  );
+
+  const canGenerate = Boolean(
+    form.eventDate &&
+    form.distance &&
+    form.trainingDaysPerWeek &&
+    expectedTimeMinutes &&
+    !validationMessage &&
+    dateInfo.daysRemaining !== null &&
+    dateInfo.daysRemaining >= 0
+  );
+
+  const resetAfterStep = (step) => {
+    setPlan(null);
+    setPlanError(null);
+
+    setForm((prev) => {
+      if (step === 1) {
+        return { eventDate: prev.eventDate, distance: '', expectedTime: '', trainingDaysPerWeek: '' };
+      }
+
+      if (step === 2) {
+        return { ...prev, expectedTime: '', trainingDaysPerWeek: '' };
+      }
+
+      if (step === 3) {
+        return { ...prev, trainingDaysPerWeek: '' };
+      }
+
+      return prev;
+    });
+  };
+
+  const handleDateChange = (value) => {
+    setForm((prev) => ({ ...prev, eventDate: value }));
+    resetAfterStep(1);
+
+    const dateValidation = window.RunningPlan.utils.getValidationMessage({ dateStr: value, distanceValue: '' });
+    if (value && !dateValidation) {
+      setCurrentStep(2);
+    } else {
+      setCurrentStep(1);
+    }
+  };
+
+  const handleDistanceChange = (value) => {
+    setForm((prev) => ({ ...prev, distance: value }));
+    resetAfterStep(2);
+
+    const nextValidation = window.RunningPlan.utils.getValidationMessage({ dateStr: form.eventDate, distanceValue: value });
+    if (value && !nextValidation) {
+      setCurrentStep(3);
+    } else {
+      setCurrentStep(2);
+    }
+  };
+
+  const handleExpectedTimeChange = (value) => {
+    setForm((prev) => ({ ...prev, expectedTime: value }));
+    resetAfterStep(3);
+
+    if (window.RunningPlan.utils.parseExpectedTime(value)) {
+      setCurrentStep(4);
+    } else {
+      setCurrentStep(3);
+    }
+  };
+
+  const handleTrainingDaysChange = (value) => {
+    setForm((prev) => ({ ...prev, trainingDaysPerWeek: value }));
+    setPlan(null);
+    setPlanError(null);
+
+    if (value) {
+      setCurrentStep(5);
+    } else {
+      setCurrentStep(4);
+    }
+  };
+
+  const handleEditStep = (step) => {
+    setCurrentStep(step);
+    resetAfterStep(step);
+  };
+
+  const handleGeneratePlan = () => {
+    if (validationMessage) {
+      setPlan(null);
+      setPlanError(validationMessage);
+      return;
+    }
+
+    if (!canGenerate) {
+      return;
+    }
+
+    if (!distanceMeta || dateInfo.daysRemaining < distanceMeta.minDays) {
+      setPlan(null);
+      setPlanError(window.RunningPlan.AMBITIOUS_PLAN_MSG);
+      return;
+    }
+
+    const generated = window.RunningPlan.utils.buildWeeklyPlan({
+      daysRemaining: dateInfo.daysRemaining,
+      expectedTimeMinutes,
+      trainingDaysPerWeek: form.trainingDaysPerWeek
+    });
+
+    setPlan(generated);
+    setPlanError(null);
+  };
+
+  const handleStartOver = () => {
+    setPlan(null);
+    setPlanError(null);
+    setCurrentStep(1);
+    setForm({ eventDate: '', distance: '', expectedTime: '', trainingDaysPerWeek: '' });
+  };
+
+  if (disclaimerStatus === 'declined') {
+    return null;
+  }
+
+  if (disclaimerStatus === 'pending') {
+    return (
+      <window.RunningPlan.DisclaimerGate
+        onAccept={() => setDisclaimerStatus('accepted')}
+        onDecline={() => setDisclaimerStatus('declined')}
+      />
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-[800px] text-left">
+      <a href="index.html" className="mb-8 inline-flex items-center gap-2 text-[1.2em] text-[#444] no-underline print:hidden">
+        <img src="../back-arrow.svg" alt="Back" width="20" height="20" className="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back
+      </a>
+
+      <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
+        {window.RunningPlan.RISK_ACCEPTED_BANNER}
+      </div>
+
+      <header className="mb-8">
+        <h1 className="mb-2 text-5xl font-bold text-brand">Marathon Prep Builder</h1>
+        <p className="m-0 text-[1.2em] text-[#444]">Plan your training schedule</p>
+      </header>
+
+      {!plan && (
+        <window.RunningPlan.StepWizard
+          form={form}
+          daysRemaining={dateInfo.daysRemaining}
+          validationMessage={validationMessage}
+          currentStep={currentStep}
+          onEditStep={handleEditStep}
+          onDateChange={handleDateChange}
+          onDistanceChange={handleDistanceChange}
+          onExpectedTimeChange={handleExpectedTimeChange}
+          onTrainingDaysChange={handleTrainingDaysChange}
+          onGenerate={handleGeneratePlan}
+          canGenerate={canGenerate}
+        />
+      )}
+
+      {planError && !plan && (
+        <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">{planError}</div>
+      )}
+
+      {plan && (
+        <window.RunningPlan.PlanResults
+          plan={plan}
+          distanceLabel={distanceMeta ? distanceMeta.label : 'Race'}
+          expectedTime={form.expectedTime}
+          daysRemaining={dateInfo.daysRemaining}
+          onStartOver={handleStartOver}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<MarathonPrepBuilderApp />, document.getElementById('root'));
+  </script>
 </body>
 </html>

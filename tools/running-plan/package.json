@@ -1,0 +1,23 @@
+{
+  "name": "running-plan-tests",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest",
+    "format": "prettier --write \"**/*.{js,json,html,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,html,md}\""
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "prettier": "^3.4.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

@@ -832,6 +832,19 @@ function MarathonPrepBuilderApp() {
     setForm({ eventDate: "", distance: "", expectedTime: "", trainingDaysPerWeek: "" });
   };
 
+  const navigateToToolsIndex = () => {
+    if (typeof window === "undefined") return;
+
+    if (typeof window.__RUNNING_PLAN_NAVIGATE__ === "function") {
+      window.__RUNNING_PLAN_NAVIGATE__("index.html");
+      return;
+    }
+
+    if (window.location && typeof window.location.assign === "function") {
+      window.location.assign("index.html");
+    }
+  };
+
   if (disclaimerStatus === "declined") {
     return null;
   }
@@ -840,7 +853,7 @@ function MarathonPrepBuilderApp() {
     return (
       <window.RunningPlan.DisclaimerGate
         onAccept={() => setDisclaimerStatus("accepted")}
-        onDecline={() => setDisclaimerStatus("declined")}
+        onDecline={navigateToToolsIndex}
       />
     );
   }

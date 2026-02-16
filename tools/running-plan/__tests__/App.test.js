@@ -40,12 +40,15 @@ describe("MarathonPrepBuilderApp", () => {
     expect(screen.getByText(/we can't generate that ambitious a plan/i)).toBeInTheDocument();
   });
 
-  test("renders empty page when disclaimer is declined", () => {
+  test("redirects to tools index when disclaimer is declined", () => {
     const { MarathonPrepBuilderApp } = loadRunningPlanModules();
+    const navigateMock = jest.fn();
+    window.__RUNNING_PLAN_NAVIGATE__ = navigateMock;
 
-    const { container } = render(React.createElement(MarathonPrepBuilderApp));
+    render(React.createElement(MarathonPrepBuilderApp));
     fireEvent.click(screen.getByRole("button", { name: /decline/i }));
 
-    expect(container).toBeEmptyDOMElement();
+    expect(navigateMock).toHaveBeenCalledWith("index.html");
+    delete window.__RUNNING_PLAN_NAVIGATE__;
   });
 });

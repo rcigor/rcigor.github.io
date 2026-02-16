@@ -34,9 +34,16 @@ const PlanResults = function PlanResults({
             {week.map((session, dayIndex) => (
               <div
                 key={dayIndex}
-                className="rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4"
+                className={
+                  session.type === "EVENT DAY"
+                    ? "rounded-md border-l-[3px] border-amber-500 bg-amber-50 p-4"
+                    : "rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4"
+                }
               >
-                <div className="mb-2 font-semibold text-brand">{session.day}</div>
+                <div className="mb-1 text-sm font-semibold text-brand">
+                  {session.day}
+                  {session.dateLabel ? ` - ${session.dateLabel}` : ""}
+                </div>
                 <div className="mb-1 font-semibold">{session.type}</div>
                 {session.type === "Strength Training" && session.exercises ? (
                   <div className="mt-2 text-sm text-[#666]">

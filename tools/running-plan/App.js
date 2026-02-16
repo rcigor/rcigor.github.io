@@ -152,7 +152,7 @@ function MarathonPrepBuilderApp() {
     }
 
     const generated = window.RunningPlan.utils.buildWeeklyPlan({
-      daysRemaining: dateInfo.daysRemaining,
+      eventDateStr: form.eventDate,
       expectedTimeMinutes,
       trainingDaysPerWeek: form.trainingDaysPerWeek,
     });

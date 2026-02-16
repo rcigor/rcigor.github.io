@@ -64,6 +64,7 @@ describe("Marathon builder acceptance flow", () => {
 
     expect(screen.getByText(/your 10km training plan/i)).toBeInTheDocument();
     expect(screen.getByText(/week 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/event day/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /print plan/i })).toBeInTheDocument();
   });
 });

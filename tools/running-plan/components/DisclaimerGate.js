@@ -20,7 +20,7 @@ const DisclaimerGate = function DisclaimerGate({ onAccept, onDecline }) {
       </a>
 
       <header className="mb-8">
-        <h1 className="mb-2 text-5xl font-bold text-brand">Marathon Prep Builder</h1>
+        <h1 className="mb-2 text-5xl font-bold text-brand">Event-Day Run Planner</h1>
         <p className="m-0 text-[1.2em] text-[#444]">Please read before using this tool.</p>
       </header>
 

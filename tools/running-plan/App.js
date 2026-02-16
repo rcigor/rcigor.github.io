@@ -215,8 +215,8 @@ function MarathonPrepBuilderApp() {
       </div>
 
       <header className="mb-8">
-        <h1 className="mb-2 text-5xl font-bold text-brand">Marathon Prep Builder</h1>
-        <p className="m-0 text-[1.2em] text-[#444]">Plan your training schedule</p>
+        <h1 className="mb-2 text-5xl font-bold text-brand">Event-Day Run Planner</h1>
+        <p className="m-0 text-[1.2em] text-[#444]">Plan your running event</p>
       </header>
 
       {!plan && (

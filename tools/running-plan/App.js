@@ -3,18 +3,33 @@ window.RunningPlan = window.RunningPlan || {};
 const { useMemo, useState } = React;
 
 function MarathonPrepBuilderApp() {
-  const [disclaimerStatus, setDisclaimerStatus] = useState("pending");
-  const [currentStep, setCurrentStep] = useState(1);
+  const [sharedPayload] = useState(() => {
+    if (typeof window === "undefined") return null;
+    return window.RunningPlan.utils.getSharePayloadFromSearch(window.location.search);
+  });
 
-  const [form, setForm] = useState({
+  const hasSharedPlan = Boolean(
+    sharedPayload && sharedPayload.plan && Array.isArray(sharedPayload.plan)
+  );
+
+  const [disclaimerStatus, setDisclaimerStatus] = useState(hasSharedPlan ? "accepted" : "pending");
+  const [currentStep, setCurrentStep] = useState(hasSharedPlan ? 5 : 1);
+
+  const [form, setForm] = useState(() => ({
     eventDate: "",
     distance: "",
     expectedTime: "",
     trainingDaysPerWeek: "",
-  });
+    ...(sharedPayload && sharedPayload.form ? sharedPayload.form : {}),
+  }));
 
-  const [plan, setPlan] = useState(null);
+  const [planName, setPlanName] = useState(() =>
+    sharedPayload && sharedPayload.planName ? sharedPayload.planName : ""
+  );
+
+  const [plan, setPlan] = useState(hasSharedPlan ? sharedPayload.plan : null);
   const [planError, setPlanError] = useState(null);
+  const [copyStatus, setCopyStatus] = useState("idle");
 
   const dateInfo = useMemo(
     () => window.RunningPlan.utils.getDaysRemaining(form.eventDate),
@@ -50,9 +65,25 @@ function MarathonPrepBuilderApp() {
     dateInfo.daysRemaining >= 0
   );
 
+  const shareUrl = useMemo(() => {
+    if (!plan) return "";
+
+    const fallbackName = distanceMeta
+      ? `${distanceMeta.label} plan (${form.eventDate || "undated"})`
+      : "Running plan";
+
+    return window.RunningPlan.utils.buildShareUrl({
+      v: 1,
+      planName: planName || fallbackName,
+      form,
+      plan,
+    });
+  }, [plan, planName, form, distanceMeta]);
+
   const resetAfterStep = (step) => {
     setPlan(null);
     setPlanError(null);
+    setCopyStatus("idle");
 
     setForm((prev) => {
       if (step === 1) {
@@ -84,6 +115,7 @@ function MarathonPrepBuilderApp() {
       dateStr: value,
       distanceValue: "",
     });
+
     if (value && !dateValidation) {
       setCurrentStep(2);
     } else {
@@ -99,6 +131,7 @@ function MarathonPrepBuilderApp() {
       dateStr: form.eventDate,
       distanceValue: value,
     });
+
     if (value && !nextValidation) {
       setCurrentStep(3);
     } else {
@@ -121,6 +154,7 @@ function MarathonPrepBuilderApp() {
     setForm((prev) => ({ ...prev, trainingDaysPerWeek: value }));
     setPlan(null);
     setPlanError(null);
+    setCopyStatus("idle");
 
     if (value) {
       setCurrentStep(5);
@@ -159,12 +193,59 @@ function MarathonPrepBuilderApp() {
 
     setPlan(generated);
     setPlanError(null);
+    setCopyStatus("idle");
+
+    if (!planName && distanceMeta) {
+      setPlanName(`${distanceMeta.label} plan (${form.eventDate})`);
+    }
+  };
+
+  const handleUpdateSession = (weekIndex, dayIndex, patch) => {
+    setPlan((prevPlan) => {
+      if (!Array.isArray(prevPlan)) return prevPlan;
+
+      return prevPlan.map((week, wi) => {
+        if (wi !== weekIndex) return week;
+
+        return week.map((session, di) => {
+          if (di !== dayIndex) return session;
+          return { ...session, ...patch };
+        });
+      });
+    });
+
+    setCopyStatus("idle");
+  };
+
+  const handleCopyShareUrl = async () => {
+    if (!shareUrl) return;
+
+    try {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === "function"
+      ) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        if (typeof window !== "undefined") {
+          window.prompt("Copy this URL:", shareUrl);
+        }
+      }
+
+      setCopyStatus("copied");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    } catch (_error) {
+      setCopyStatus("idle");
+    }
   };
 
   const handleStartOver = () => {
     setPlan(null);
     setPlanError(null);
     setCurrentStep(1);
+    setPlanName("");
+    setCopyStatus("idle");
     setForm({ eventDate: "", distance: "", expectedTime: "", trainingDaysPerWeek: "" });
   };
 
@@ -181,10 +262,6 @@ function MarathonPrepBuilderApp() {
     }
   };
 
-  if (disclaimerStatus === "declined") {
-    return null;
-  }
-
   if (disclaimerStatus === "pending") {
     return (
       <window.RunningPlan.DisclaimerGate
@@ -195,7 +272,7 @@ function MarathonPrepBuilderApp() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[800px] text-left">
+    <div className="mx-auto w-full max-w-[900px] text-left">
       <a
         href="index.html"
         className="mb-8 inline-flex items-center gap-2 text-[1.2em] text-[#444] no-underline print:hidden"
@@ -248,6 +325,15 @@ function MarathonPrepBuilderApp() {
           expectedTime={form.expectedTime}
           daysRemaining={dateInfo.daysRemaining}
           onStartOver={handleStartOver}
+          planName={planName}
+          onPlanNameChange={(value) => {
+            setPlanName(value);
+            setCopyStatus("idle");
+          }}
+          onUpdateSession={handleUpdateSession}
+          shareUrl={shareUrl}
+          onCopyShareUrl={handleCopyShareUrl}
+          copyStatus={copyStatus}
         />
       )}
     </div>

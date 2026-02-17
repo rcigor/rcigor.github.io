@@ -30,6 +30,7 @@ window.RunningPlan.DISCLAIMER_LINES = [
 window.RunningPlan.RISK_ACCEPTED_BANNER = "You accepted to use this at your own risk.";
 window.RunningPlan.TIME_TRAVEL_MSG = "Good luck time travelling :) ";
 window.RunningPlan.AMBITIOUS_PLAN_MSG = "we can't generate that ambitious a plan :) ";
+window.RunningPlan.SHARE_BASE_URL = "https://igorcarreira.pt/tools/running-plan";
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -40,5 +41,6 @@ if (typeof module !== "undefined" && module.exports) {
     RISK_ACCEPTED_BANNER: window.RunningPlan.RISK_ACCEPTED_BANNER,
     TIME_TRAVEL_MSG: window.RunningPlan.TIME_TRAVEL_MSG,
     AMBITIOUS_PLAN_MSG: window.RunningPlan.AMBITIOUS_PLAN_MSG,
+    SHARE_BASE_URL: window.RunningPlan.SHARE_BASE_URL,
   };
 }

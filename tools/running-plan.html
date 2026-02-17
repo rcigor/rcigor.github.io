@@ -61,6 +61,7 @@ window.RunningPlan.DISCLAIMER_LINES = [
 window.RunningPlan.RISK_ACCEPTED_BANNER = "You accepted to use this at your own risk.";
 window.RunningPlan.TIME_TRAVEL_MSG = "Good luck time travelling :) ";
 window.RunningPlan.AMBITIOUS_PLAN_MSG = "we can't generate that ambitious a plan :) ";
+window.RunningPlan.SHARE_BASE_URL = "https://igorcarreira.pt/tools/running-plan";
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -71,6 +72,7 @@ if (typeof module !== "undefined" && module.exports) {
     RISK_ACCEPTED_BANNER: window.RunningPlan.RISK_ACCEPTED_BANNER,
     TIME_TRAVEL_MSG: window.RunningPlan.TIME_TRAVEL_MSG,
     AMBITIOUS_PLAN_MSG: window.RunningPlan.AMBITIOUS_PLAN_MSG,
+    SHARE_BASE_URL: window.RunningPlan.SHARE_BASE_URL,
   };
 }
   </script>
@@ -137,6 +139,88 @@ window.RunningPlan.utils = {
     );
   },
 
+  encodeBase64Url(value) {
+    const raw = String(value || "");
+    let base64 = "";
+
+    if (typeof btoa === "function") {
+      base64 = btoa(unescape(encodeURIComponent(raw)));
+    } else if (typeof Buffer !== "undefined") {
+      base64 = Buffer.from(raw, "utf8").toString("base64");
+    } else {
+      return "";
+    }
+
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  },
+
+  decodeBase64Url(value) {
+    try {
+      let normalized = String(value || "")
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+      while (normalized.length % 4 !== 0) {
+        normalized += "=";
+      }
+
+      if (typeof atob === "function") {
+        return decodeURIComponent(escape(atob(normalized)));
+      }
+
+      if (typeof Buffer !== "undefined") {
+        return Buffer.from(normalized, "base64").toString("utf8");
+      }
+
+      return "";
+    } catch (_error) {
+      return "";
+    }
+  },
+
+  encodeSharePayload(payload) {
+    try {
+      const json = JSON.stringify(payload);
+      return this.encodeBase64Url(json);
+    } catch (_error) {
+      return "";
+    }
+  },
+
+  decodeSharePayload(encodedPayload) {
+    try {
+      const decoded = this.decodeBase64Url(encodedPayload);
+      if (!decoded) return null;
+
+      const parsed = JSON.parse(decoded);
+      if (!parsed || typeof parsed !== "object") return null;
+
+      return parsed;
+    } catch (_error) {
+      return null;
+    }
+  },
+
+  buildShareUrl(payload) {
+    const encoded = this.encodeSharePayload(payload);
+    if (!encoded) return "";
+
+    return `${window.RunningPlan.SHARE_BASE_URL}?params=${encodeURIComponent(encoded)}`;
+  },
+
+  getSharePayloadFromSearch(search) {
+    const source = String(search || "");
+    if (!source) return null;
+
+    const query = source.startsWith("?") ? source.slice(1) : source;
+    const params = new URLSearchParams(query);
+    const encoded = params.get("params");
+
+    if (!encoded) return null;
+
+    return this.decodeSharePayload(encoded);
+  },
+
   getValidationMessage({ dateStr, distanceValue }) {
     const { daysRemaining, isPast } = this.getDaysRemaining(dateStr);
 
@@ -200,7 +284,7 @@ window.RunningPlan.utils = {
 
       const dayName = this.DAY_NAMES[currentDate.getDay()];
       const daysUntilRace = totalDays - dayOffset - 1;
-      const weeksUntilRace = Math.ceil((daysUntilRace + 1) / 7);
+      const isTaperWeek = daysUntilRace > 0 && daysUntilRace <= 7;
 
       const intensityFactor = 1 + (weekIndex / Math.max(totalWeeks, 1)) * 0.5;
       const hiitDuration = 30 + weekIndex * 5;
@@ -252,6 +336,7 @@ window.RunningPlan.utils = {
           duration: 0,
           description: null,
           exercises: null,
+          isTaperWeek: false,
         });
         continue;
       }
@@ -264,20 +349,9 @@ window.RunningPlan.utils = {
           dateLabel: this.formatDate(currentDate),
           type: "Rest Day",
           duration: 0,
-          description: null,
+          description: isTaperWeek ? "Taper week recovery" : null,
           exercises: null,
-        });
-        continue;
-      }
-
-      if (sessionConfig.type === "Outdoor Slow Run" && weeksUntilRace <= 2) {
-        plan[weekIndex].push({
-          day: dayName,
-          dateLabel: this.formatDate(currentDate),
-          type: "Rest Day",
-          duration: 0,
-          description: null,
-          exercises: null,
+          isTaperWeek,
         });
         continue;
       }
@@ -287,18 +361,36 @@ window.RunningPlan.utils = {
       let exercises = null;
 
       if (sessionConfig.type === "Strength Training") {
-        exercises = window.RunningPlan.STRENGTH_EXERCISES;
+        if (isTaperWeek) {
+          exercises = window.RunningPlan.STRENGTH_EXERCISES.slice(0, 4);
+          description = "Light mobility and activation (taper week)";
+        } else {
+          exercises = window.RunningPlan.STRENGTH_EXERCISES;
+        }
       } else if (sessionConfig.type === "HIIT Indoor Cycling") {
-        duration = hiitDuration;
-        description = "High Intensity Interval Training";
+        duration = isTaperWeek ? Math.max(20, Math.round(hiitDuration * 0.6)) : hiitDuration;
+        description = isTaperWeek
+          ? "Reduced intensity intervals (taper week)"
+          : "High Intensity Interval Training";
       } else if (sessionConfig.type === "Long Indoor Cycling") {
-        duration = Math.round((60 + Math.random() * 10) * intensityFactor);
-        description = "Steady long ride";
+        const baseDuration = Math.round((60 + Math.random() * 10) * intensityFactor);
+        duration = isTaperWeek ? Math.max(30, Math.round(baseDuration * 0.6)) : baseDuration;
+        description = isTaperWeek ? "Steady easy ride (taper week)" : "Steady long ride";
       } else if (sessionConfig.type === "Outdoor Slow Run") {
-        duration = weeksUntilRace === 1 ? Math.round(slowRunDuration * 0.75) : slowRunDuration;
-        description = "Easy pace";
+        if (isTaperWeek) {
+          duration = Math.max(20, Math.round(slowRunDuration * 0.5));
+          description = "Easy pace (taper week)";
+        } else if (daysUntilRace <= 14) {
+          duration = Math.max(25, Math.round(slowRunDuration * 0.75));
+          description = "Easy pace (pre-taper)";
+        } else {
+          duration = slowRunDuration;
+          description = "Easy pace";
+        }
       } else if (sessionConfig.type === "Outdoor Sprint Strides") {
-        description = "6 x 200m, rest 2 mins in between";
+        description = isTaperWeek
+          ? "4 x 100m relaxed strides (taper week)"
+          : "6 x 200m, rest 2 mins in between";
       }
 
       plan[weekIndex].push({
@@ -308,6 +400,7 @@ window.RunningPlan.utils = {
         duration,
         description,
         exercises,
+        isTaperWeek,
       });
     }
 
@@ -577,16 +670,83 @@ if (typeof module !== "undefined" && module.exports) {
   <script type="text/babel">
 window.RunningPlan = window.RunningPlan || {};
 
+const { useState } = React;
+
 const PlanResults = function PlanResults({
   plan,
   distanceLabel,
   expectedTime,
   daysRemaining,
   onStartOver,
+  planName,
+  onPlanNameChange,
+  onUpdateSession,
+  shareUrl,
+  onCopyShareUrl,
+  copyStatus,
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [activeEditorKey, setActiveEditorKey] = useState(null);
+
+  const toggleEditing = () => {
+    setIsEditing((prev) => {
+      const next = !prev;
+      if (!next) setActiveEditorKey(null);
+      return next;
+    });
+  };
+
+  const renderReadOnlySession = (session) => (
+    <>
+      <div className="mb-1 text-sm font-semibold text-brand">
+        {session.day}
+        {session.dateLabel ? ` - ${session.dateLabel}` : ""}
+      </div>
+      <div className="mb-1 font-semibold">{session.type}</div>
+
+      {Array.isArray(session.exercises) && session.exercises.length > 0 ? (
+        <div className="mt-2 text-sm text-[#666]">
+          <strong>Exercises:</strong>
+          <div className="mt-1">{session.exercises.slice(0, 6).join(", ")}</div>
+        </div>
+      ) : null}
+
+      {session.description ? <div className="mt-2 text-sm text-[#666]">{session.description}</div> : null}
+
+      {Number(session.duration) > 0 ? (
+        <div className="mt-1 text-sm font-semibold text-[#666]">{session.duration} minutes</div>
+      ) : null}
+    </>
+  );
+
   return (
-    <section className="mt-10">
+    <section className="mt-10 pb-24">
       <div className="mb-6 print:hidden">
+        <label htmlFor="planName" className="mb-2 block text-sm font-semibold text-brand">
+          Plan name
+        </label>
+        <input
+          id="planName"
+          type="text"
+          value={planName}
+          onChange={(e) => onPlanNameChange(e.target.value)}
+          placeholder="e.g., Spring 10k prep"
+          className="w-full rounded-lg border border-gray-200 p-3 text-base"
+        />
+      </div>
+
+      <div className="mb-6 flex flex-wrap items-center gap-3 print:hidden">
+        <button
+          type="button"
+          onClick={toggleEditing}
+          className={
+            isEditing
+              ? "rounded-lg bg-amber-500 px-4 py-2.5 font-semibold text-white transition hover:bg-amber-600"
+              : "rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100"
+          }
+        >
+          {isEditing ? "Done editing" : "Enable edit mode"}
+        </button>
         <button
           type="button"
           onClick={() => window.print()}
@@ -594,54 +754,182 @@ const PlanResults = function PlanResults({
         >
           Print plan
         </button>
+        {isEditing ? (
+          <span className="text-sm text-gray-600">Click "Edit day" on a card to modify only that day.</span>
+        ) : null}
       </div>
 
-      <h2 className="mb-2 text-3xl font-bold text-brand">Your {distanceLabel} Training Plan</h2>
+      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 print:hidden">
+        <div className="mb-2 text-sm font-semibold text-brand">Share this plan</div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input
+            type="text"
+            readOnly
+            value={shareUrl}
+            className="w-full rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700"
+          />
+          <button
+            type="button"
+            onClick={onCopyShareUrl}
+            className="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark"
+          >
+            {copyStatus === "copied" ? "Copied" : "Copy URL"}
+          </button>
+        </div>
+      </div>
+
+      <h2 className="mb-1 text-3xl font-bold text-brand">{planName || `Your ${distanceLabel} Plan`}</h2>
       <p className="mb-6 text-[#666]">
         Target: {expectedTime} finish time | {daysRemaining} days to race day
       </p>
 
-      {plan.map((week, weekIndex) => (
-        <div
-          key={weekIndex}
-          className="mb-6 rounded-lg border border-gray-200 bg-white p-6 break-inside-avoid"
-        >
-          <div className="mb-4 text-lg font-bold text-brand">Week {weekIndex + 1}</div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {week.map((session, dayIndex) => (
-              <div
-                key={dayIndex}
-                className={
-                  session.type === "EVENT DAY"
-                    ? "rounded-md border-l-[3px] border-amber-500 bg-amber-50 p-4"
-                    : "rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4"
-                }
-              >
-                <div className="mb-1 text-sm font-semibold text-brand">
-                  {session.day}
-                  {session.dateLabel ? ` - ${session.dateLabel}` : ""}
-                </div>
-                <div className="mb-1 font-semibold">{session.type}</div>
-                {session.type === "Strength Training" && session.exercises ? (
-                  <div className="mt-2 text-sm text-[#666]">
-                    <strong>Exercises:</strong>
-                    <div className="mt-1">{session.exercises.slice(0, 4).join(", ")}</div>
-                  </div>
-                ) : session.description ? (
-                  <div className="mt-2 text-sm text-[#666]">
-                    <div>{session.description}</div>
-                    {session.duration > 0 && (
-                      <div className="mt-1 font-semibold">{session.duration} minutes</div>
+      {plan.map((week, weekIndex) => {
+        const hasTaperWeek = week.some(
+          (session) => session.isTaperWeek && session.type !== "EVENT DAY"
+        );
+
+        return (
+          <div
+            key={weekIndex}
+            className="mb-6 rounded-lg border border-gray-200 bg-white p-6 break-inside-avoid"
+          >
+            <div className="mb-4 flex items-center gap-2 text-lg font-bold text-brand">
+              <span>Week {weekIndex + 1}</span>
+              {hasTaperWeek && (
+                <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
+                  Taper week
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {week.map((session, dayIndex) => {
+                const sessionKey = `${weekIndex}-${dayIndex}`;
+                const isThisSessionEditing = isEditing && activeEditorKey === sessionKey;
+
+                return (
+                  <div
+                    key={dayIndex}
+                    className={
+                      session.type === "EVENT DAY"
+                        ? "rounded-md border-l-[3px] border-amber-500 bg-amber-50 p-4"
+                        : "rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4"
+                    }
+                  >
+                    {isThisSessionEditing ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="m-0 text-sm font-semibold text-brand">Editing day</p>
+                          <button
+                            type="button"
+                            onClick={() => setActiveEditorKey(null)}
+                            className="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs font-semibold text-gray-700 transition hover:bg-gray-100"
+                          >
+                            Done with day
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          <input
+                            type="text"
+                            value={session.day || ""}
+                            onChange={(e) =>
+                              onUpdateSession(weekIndex, dayIndex, { day: e.target.value })
+                            }
+                            className="rounded border border-gray-200 p-2 text-sm"
+                            placeholder="Day"
+                          />
+                          <input
+                            type="text"
+                            value={session.dateLabel || ""}
+                            onChange={(e) =>
+                              onUpdateSession(weekIndex, dayIndex, { dateLabel: e.target.value })
+                            }
+                            className="rounded border border-gray-200 p-2 text-sm"
+                            placeholder="Date"
+                          />
+                        </div>
+
+                        <input
+                          type="text"
+                          value={session.type || ""}
+                          onChange={(e) =>
+                            onUpdateSession(weekIndex, dayIndex, { type: e.target.value })
+                          }
+                          className="w-full rounded border border-gray-200 p-2 text-sm"
+                          placeholder="Session type"
+                        />
+
+                        <input
+                          type="text"
+                          value={session.duration ?? ""}
+                          onChange={(e) =>
+                            onUpdateSession(weekIndex, dayIndex, { duration: e.target.value })
+                          }
+                          className="w-full rounded border border-gray-200 p-2 text-sm"
+                          placeholder="Duration (minutes)"
+                        />
+
+                        <textarea
+                          value={session.description || ""}
+                          onChange={(e) =>
+                            onUpdateSession(weekIndex, dayIndex, { description: e.target.value })
+                          }
+                          className="w-full rounded border border-gray-200 p-2 text-sm"
+                          rows="2"
+                          placeholder="Description / notes"
+                        />
+
+                        <input
+                          type="text"
+                          value={Array.isArray(session.exercises) ? session.exercises.join(", ") : ""}
+                          onChange={(e) =>
+                            onUpdateSession(weekIndex, dayIndex, {
+                              exercises: e.target.value
+                                ? e.target.value
+                                    .split(",")
+                                    .map((item) => item.trim())
+                                    .filter(Boolean)
+                                : null,
+                            })
+                          }
+                          className="w-full rounded border border-gray-200 p-2 text-sm"
+                          placeholder="Exercises (comma-separated)"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        {renderReadOnlySession(session)}
+                        {isEditing ? (
+                          <button
+                            type="button"
+                            onClick={() => setActiveEditorKey(sessionKey)}
+                            className="mt-3 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100"
+                          >
+                            Edit day
+                          </button>
+                        ) : null}
+                      </>
                     )}
                   </div>
-                ) : session.duration > 0 ? (
-                  <div className="text-sm text-[#666]">{session.duration} minutes</div>
-                ) : null}
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
+        );
+      })}
+
+      {isEditing ? (
+        <div className="fixed bottom-4 right-4 z-30 print:hidden">
+          <button
+            type="button"
+            onClick={toggleEditing}
+            className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-amber-600"
+          >
+            Done editing
+          </button>
         </div>
-      ))}
+      ) : null}
 
       <button
         type="button"
@@ -667,18 +955,33 @@ window.RunningPlan = window.RunningPlan || {};
 const { useMemo, useState } = React;
 
 function MarathonPrepBuilderApp() {
-  const [disclaimerStatus, setDisclaimerStatus] = useState("pending");
-  const [currentStep, setCurrentStep] = useState(1);
+  const [sharedPayload] = useState(() => {
+    if (typeof window === "undefined") return null;
+    return window.RunningPlan.utils.getSharePayloadFromSearch(window.location.search);
+  });
 
-  const [form, setForm] = useState({
+  const hasSharedPlan = Boolean(
+    sharedPayload && sharedPayload.plan && Array.isArray(sharedPayload.plan)
+  );
+
+  const [disclaimerStatus, setDisclaimerStatus] = useState(hasSharedPlan ? "accepted" : "pending");
+  const [currentStep, setCurrentStep] = useState(hasSharedPlan ? 5 : 1);
+
+  const [form, setForm] = useState(() => ({
     eventDate: "",
     distance: "",
     expectedTime: "",
     trainingDaysPerWeek: "",
-  });
+    ...(sharedPayload && sharedPayload.form ? sharedPayload.form : {}),
+  }));
 
-  const [plan, setPlan] = useState(null);
+  const [planName, setPlanName] = useState(() =>
+    sharedPayload && sharedPayload.planName ? sharedPayload.planName : ""
+  );
+
+  const [plan, setPlan] = useState(hasSharedPlan ? sharedPayload.plan : null);
   const [planError, setPlanError] = useState(null);
+  const [copyStatus, setCopyStatus] = useState("idle");
 
   const dateInfo = useMemo(
     () => window.RunningPlan.utils.getDaysRemaining(form.eventDate),
@@ -714,9 +1017,25 @@ function MarathonPrepBuilderApp() {
     dateInfo.daysRemaining >= 0
   );
 
+  const shareUrl = useMemo(() => {
+    if (!plan) return "";
+
+    const fallbackName = distanceMeta
+      ? `${distanceMeta.label} plan (${form.eventDate || "undated"})`
+      : "Running plan";
+
+    return window.RunningPlan.utils.buildShareUrl({
+      v: 1,
+      planName: planName || fallbackName,
+      form,
+      plan,
+    });
+  }, [plan, planName, form, distanceMeta]);
+
   const resetAfterStep = (step) => {
     setPlan(null);
     setPlanError(null);
+    setCopyStatus("idle");
 
     setForm((prev) => {
       if (step === 1) {
@@ -748,6 +1067,7 @@ function MarathonPrepBuilderApp() {
       dateStr: value,
       distanceValue: "",
     });
+
     if (value && !dateValidation) {
       setCurrentStep(2);
     } else {
@@ -763,6 +1083,7 @@ function MarathonPrepBuilderApp() {
       dateStr: form.eventDate,
       distanceValue: value,
     });
+
     if (value && !nextValidation) {
       setCurrentStep(3);
     } else {
@@ -785,6 +1106,7 @@ function MarathonPrepBuilderApp() {
     setForm((prev) => ({ ...prev, trainingDaysPerWeek: value }));
     setPlan(null);
     setPlanError(null);
+    setCopyStatus("idle");
 
     if (value) {
       setCurrentStep(5);
@@ -823,12 +1145,59 @@ function MarathonPrepBuilderApp() {
 
     setPlan(generated);
     setPlanError(null);
+    setCopyStatus("idle");
+
+    if (!planName && distanceMeta) {
+      setPlanName(`${distanceMeta.label} plan (${form.eventDate})`);
+    }
+  };
+
+  const handleUpdateSession = (weekIndex, dayIndex, patch) => {
+    setPlan((prevPlan) => {
+      if (!Array.isArray(prevPlan)) return prevPlan;
+
+      return prevPlan.map((week, wi) => {
+        if (wi !== weekIndex) return week;
+
+        return week.map((session, di) => {
+          if (di !== dayIndex) return session;
+          return { ...session, ...patch };
+        });
+      });
+    });
+
+    setCopyStatus("idle");
+  };
+
+  const handleCopyShareUrl = async () => {
+    if (!shareUrl) return;
+
+    try {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === "function"
+      ) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        if (typeof window !== "undefined") {
+          window.prompt("Copy this URL:", shareUrl);
+        }
+      }
+
+      setCopyStatus("copied");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    } catch (_error) {
+      setCopyStatus("idle");
+    }
   };
 
   const handleStartOver = () => {
     setPlan(null);
     setPlanError(null);
     setCurrentStep(1);
+    setPlanName("");
+    setCopyStatus("idle");
     setForm({ eventDate: "", distance: "", expectedTime: "", trainingDaysPerWeek: "" });
   };
 
@@ -845,10 +1214,6 @@ function MarathonPrepBuilderApp() {
     }
   };
 
-  if (disclaimerStatus === "declined") {
-    return null;
-  }
-
   if (disclaimerStatus === "pending") {
     return (
       <window.RunningPlan.DisclaimerGate
@@ -859,7 +1224,7 @@ function MarathonPrepBuilderApp() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[800px] text-left">
+    <div className="mx-auto w-full max-w-[900px] text-left">
       <a
         href="index.html"
         className="mb-8 inline-flex items-center gap-2 text-[1.2em] text-[#444] no-underline print:hidden"
@@ -912,6 +1277,15 @@ function MarathonPrepBuilderApp() {
           expectedTime={form.expectedTime}
           daysRemaining={dateInfo.daysRemaining}
           onStartOver={handleStartOver}
+          planName={planName}
+          onPlanNameChange={(value) => {
+            setPlanName(value);
+            setCopyStatus("idle");
+          }}
+          onUpdateSession={handleUpdateSession}
+          shareUrl={shareUrl}
+          onCopyShareUrl={handleCopyShareUrl}
+          copyStatus={copyStatus}
         />
       )}
     </div>

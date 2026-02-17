@@ -59,6 +59,88 @@ window.RunningPlan.utils = {
     );
   },
 
+  encodeBase64Url(value) {
+    const raw = String(value || "");
+    let base64 = "";
+
+    if (typeof btoa === "function") {
+      base64 = btoa(unescape(encodeURIComponent(raw)));
+    } else if (typeof Buffer !== "undefined") {
+      base64 = Buffer.from(raw, "utf8").toString("base64");
+    } else {
+      return "";
+    }
+
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  },
+
+  decodeBase64Url(value) {
+    try {
+      let normalized = String(value || "")
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+      while (normalized.length % 4 !== 0) {
+        normalized += "=";
+      }
+
+      if (typeof atob === "function") {
+        return decodeURIComponent(escape(atob(normalized)));
+      }
+
+      if (typeof Buffer !== "undefined") {
+        return Buffer.from(normalized, "base64").toString("utf8");
+      }
+
+      return "";
+    } catch (_error) {
+      return "";
+    }
+  },
+
+  encodeSharePayload(payload) {
+    try {
+      const json = JSON.stringify(payload);
+      return this.encodeBase64Url(json);
+    } catch (_error) {
+      return "";
+    }
+  },
+
+  decodeSharePayload(encodedPayload) {
+    try {
+      const decoded = this.decodeBase64Url(encodedPayload);
+      if (!decoded) return null;
+
+      const parsed = JSON.parse(decoded);
+      if (!parsed || typeof parsed !== "object") return null;
+
+      return parsed;
+    } catch (_error) {
+      return null;
+    }
+  },
+
+  buildShareUrl(payload) {
+    const encoded = this.encodeSharePayload(payload);
+    if (!encoded) return "";
+
+    return `${window.RunningPlan.SHARE_BASE_URL}?params=${encodeURIComponent(encoded)}`;
+  },
+
+  getSharePayloadFromSearch(search) {
+    const source = String(search || "");
+    if (!source) return null;
+
+    const query = source.startsWith("?") ? source.slice(1) : source;
+    const params = new URLSearchParams(query);
+    const encoded = params.get("params");
+
+    if (!encoded) return null;
+
+    return this.decodeSharePayload(encoded);
+  },
+
   getValidationMessage({ dateStr, distanceValue }) {
     const { daysRemaining, isPast } = this.getDaysRemaining(dateStr);
 
@@ -122,7 +204,7 @@ window.RunningPlan.utils = {
 
       const dayName = this.DAY_NAMES[currentDate.getDay()];
       const daysUntilRace = totalDays - dayOffset - 1;
-      const weeksUntilRace = Math.ceil((daysUntilRace + 1) / 7);
+      const isTaperWeek = daysUntilRace > 0 && daysUntilRace <= 7;
 
       const intensityFactor = 1 + (weekIndex / Math.max(totalWeeks, 1)) * 0.5;
       const hiitDuration = 30 + weekIndex * 5;
@@ -174,6 +256,7 @@ window.RunningPlan.utils = {
           duration: 0,
           description: null,
           exercises: null,
+          isTaperWeek: false,
         });
         continue;
       }
@@ -186,20 +269,9 @@ window.RunningPlan.utils = {
           dateLabel: this.formatDate(currentDate),
           type: "Rest Day",
           duration: 0,
-          description: null,
+          description: isTaperWeek ? "Taper week recovery" : null,
           exercises: null,
-        });
-        continue;
-      }
-
-      if (sessionConfig.type === "Outdoor Slow Run" && weeksUntilRace <= 2) {
-        plan[weekIndex].push({
-          day: dayName,
-          dateLabel: this.formatDate(currentDate),
-          type: "Rest Day",
-          duration: 0,
-          description: null,
-          exercises: null,
+          isTaperWeek,
         });
         continue;
       }
@@ -209,18 +281,36 @@ window.RunningPlan.utils = {
       let exercises = null;
 
       if (sessionConfig.type === "Strength Training") {
-        exercises = window.RunningPlan.STRENGTH_EXERCISES;
+        if (isTaperWeek) {
+          exercises = window.RunningPlan.STRENGTH_EXERCISES.slice(0, 4);
+          description = "Light mobility and activation (taper week)";
+        } else {
+          exercises = window.RunningPlan.STRENGTH_EXERCISES;
+        }
       } else if (sessionConfig.type === "HIIT Indoor Cycling") {
-        duration = hiitDuration;
-        description = "High Intensity Interval Training";
+        duration = isTaperWeek ? Math.max(20, Math.round(hiitDuration * 0.6)) : hiitDuration;
+        description = isTaperWeek
+          ? "Reduced intensity intervals (taper week)"
+          : "High Intensity Interval Training";
       } else if (sessionConfig.type === "Long Indoor Cycling") {
-        duration = Math.round((60 + Math.random() * 10) * intensityFactor);
-        description = "Steady long ride";
+        const baseDuration = Math.round((60 + Math.random() * 10) * intensityFactor);
+        duration = isTaperWeek ? Math.max(30, Math.round(baseDuration * 0.6)) : baseDuration;
+        description = isTaperWeek ? "Steady easy ride (taper week)" : "Steady long ride";
       } else if (sessionConfig.type === "Outdoor Slow Run") {
-        duration = weeksUntilRace === 1 ? Math.round(slowRunDuration * 0.75) : slowRunDuration;
-        description = "Easy pace";
+        if (isTaperWeek) {
+          duration = Math.max(20, Math.round(slowRunDuration * 0.5));
+          description = "Easy pace (taper week)";
+        } else if (daysUntilRace <= 14) {
+          duration = Math.max(25, Math.round(slowRunDuration * 0.75));
+          description = "Easy pace (pre-taper)";
+        } else {
+          duration = slowRunDuration;
+          description = "Easy pace";
+        }
       } else if (sessionConfig.type === "Outdoor Sprint Strides") {
-        description = "6 x 200m, rest 2 mins in between";
+        description = isTaperWeek
+          ? "4 x 100m relaxed strides (taper week)"
+          : "6 x 200m, rest 2 mins in between";
       }
 
       plan[weekIndex].push({
@@ -230,6 +320,7 @@ window.RunningPlan.utils = {
         duration,
         description,
         exercises,
+        isTaperWeek,
       });
     }
 

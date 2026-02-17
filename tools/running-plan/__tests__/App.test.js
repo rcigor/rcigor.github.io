@@ -3,6 +3,10 @@ const { fireEvent, render, screen } = require("@testing-library/react");
 const { loadRunningPlanModules } = require("./testHelpers");
 
 describe("MarathonPrepBuilderApp", () => {
+  beforeEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
   test("shows disclaimer first and allows accept flow", () => {
     const { MarathonPrepBuilderApp } = loadRunningPlanModules();
 
@@ -50,5 +54,32 @@ describe("MarathonPrepBuilderApp", () => {
 
     expect(navigateMock).toHaveBeenCalledWith("index.html");
     delete window.__RUNNING_PLAN_NAVIGATE__;
+  });
+
+  test("loads shared plan from URL params and renders it directly", () => {
+    const { MarathonPrepBuilderApp } = loadRunningPlanModules();
+    const sharedPayload = {
+      v: 1,
+      planName: "Shared Test Plan",
+      form: {
+        eventDate: "2030-05-01",
+        distance: "10k",
+        expectedTime: "1:05",
+        trainingDaysPerWeek: "4",
+      },
+      plan: [[{ day: "Monday", dateLabel: "1 May 2030", type: "EVENT DAY", duration: 0 }]],
+    };
+
+    const shareUrl = window.RunningPlan.utils.buildShareUrl(sharedPayload);
+    const search = shareUrl.includes("?") ? `?${shareUrl.split("?")[1]}` : "";
+    window.history.pushState({}, "", `/${search}`);
+
+    render(React.createElement(MarathonPrepBuilderApp));
+
+    expect(screen.getByText("Shared Test Plan")).toBeInTheDocument();
+    expect(screen.getByText(/event day/i)).toBeInTheDocument();
+    expect(screen.queryByText(/important health and safety disclaimer/i)).not.toBeInTheDocument();
+
+    window.history.pushState({}, "", "/");
   });
 });

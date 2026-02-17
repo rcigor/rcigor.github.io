@@ -62,7 +62,7 @@ describe("Marathon builder acceptance flow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /generate training plan/i }));
 
-    expect(screen.getByText(/your 10km training plan/i)).toBeInTheDocument();
+    expect(screen.getByText(/10km plan/i)).toBeInTheDocument();
     expect(screen.getByText(/week 1/i)).toBeInTheDocument();
     expect(screen.getByText(/event day/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /print plan/i })).toBeInTheDocument();

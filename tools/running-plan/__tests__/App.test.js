@@ -71,8 +71,8 @@ describe("MarathonPrepBuilderApp", () => {
     };
 
     const shareUrl = window.RunningPlan.utils.buildShareUrl(sharedPayload);
-    const search = shareUrl.includes("?") ? `?${shareUrl.split("?")[1]}` : "";
-    window.history.pushState({}, "", `/${search}`);
+    const hash = shareUrl.includes("#") ? `#${shareUrl.split("#")[1]}` : "";
+    window.history.pushState({}, "", `/${hash}`);
 
     render(React.createElement(MarathonPrepBuilderApp));
 

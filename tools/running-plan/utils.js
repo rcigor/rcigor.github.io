@@ -2,11 +2,85 @@ window.RunningPlan = window.RunningPlan || {};
 
 window.RunningPlan.utils = {
   DAY_NAMES: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  SHARE_TYPE_DICTIONARY: [
+    "Rest Day",
+    "Strength Training",
+    "HIIT Indoor Cycling",
+    "Long Indoor Cycling",
+    "Outdoor Slow Run",
+    "Outdoor Sprint Strides",
+    "EVENT DAY",
+  ],
+  MONTH_DICTIONARY: {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  },
 
   getDistanceMeta(distanceValue) {
     return (
       (window.RunningPlan.DISTANCE_OPTIONS || []).find((d) => d.value === distanceValue) || null
     );
+  },
+
+  parseDateInput(dateStr) {
+    const source = String(dateStr || "").trim();
+    const match = source.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const parsed = new Date(year, month - 1, day);
+
+    if (Number.isNaN(parsed.getTime())) return null;
+    if (
+      parsed.getFullYear() !== year ||
+      parsed.getMonth() !== month - 1 ||
+      parsed.getDate() !== day
+    ) {
+      return null;
+    }
+
+    parsed.setHours(0, 0, 0, 0);
+    return parsed;
+  },
+
+  parseDateLabel(dateLabel) {
+    const source = String(dateLabel || "").trim();
+    const match = source.match(/^(\d{1,2}) ([A-Za-z]{3}) (\d{4})$/);
+    if (!match) return null;
+
+    const day = Number(match[1]);
+    const month = this.MONTH_DICTIONARY[match[2]];
+    const year = Number(match[3]);
+
+    if (month === undefined) return null;
+
+    const parsed = new Date(year, month, day);
+    if (Number.isNaN(parsed.getTime())) return null;
+    if (parsed.getFullYear() !== year || parsed.getMonth() !== month || parsed.getDate() !== day) {
+      return null;
+    }
+
+    parsed.setHours(0, 0, 0, 0);
+    return parsed;
+  },
+
+  toDateInput(date) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
   },
 
   parseExpectedTime(timeStr) {
@@ -31,11 +105,12 @@ window.RunningPlan.utils = {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const eventDate = new Date(dateStr);
-    eventDate.setHours(0, 0, 0, 0);
+    const eventDate = this.parseDateInput(dateStr);
+    if (!eventDate) {
+      return { daysRemaining: null, isPast: false };
+    }
 
-    const diffMs = eventDate - today;
-    const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const days = this.daysDiffByCalendar(today, eventDate);
 
     return {
       daysRemaining: days,
@@ -57,6 +132,240 @@ window.RunningPlan.utils = {
       a.getMonth() === b.getMonth() &&
       a.getDate() === b.getDate()
     );
+  },
+
+  daysDiffByCalendar(startDate, endDate) {
+    const startUtc = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endUtc = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    return Math.floor((endUtc - startUtc) / (1000 * 60 * 60 * 24));
+  },
+
+  toShareToken(value, dictionary) {
+    const source = String(value || "");
+    if (!source) return "";
+
+    const index = Array.isArray(dictionary) ? dictionary.indexOf(source) : -1;
+    return index >= 0 ? index : source;
+  },
+
+  fromShareToken(token, dictionary) {
+    if (typeof token === "number" && Array.isArray(dictionary) && dictionary[token]) {
+      return dictionary[token];
+    }
+
+    return token || "";
+  },
+
+  compactSession(session) {
+    const source = session && typeof session === "object" ? session : {};
+    const exerciseDictionary = window.RunningPlan.STRENGTH_EXERCISES || [];
+
+    let durationValue = source.duration;
+    if (durationValue === undefined || durationValue === null || durationValue === "") {
+      durationValue = 0;
+    } else if (typeof durationValue === "string" && /^\d+$/.test(durationValue.trim())) {
+      durationValue = Number(durationValue.trim());
+    }
+
+    const compactExercises = Array.isArray(source.exercises)
+      ? source.exercises
+          .map((exercise) => this.toShareToken(exercise, exerciseDictionary))
+          .filter((exercise) => exercise !== "")
+      : [];
+
+    const compactSession = [
+      this.toShareToken(source.day, this.DAY_NAMES),
+      source.dateLabel || "",
+      this.toShareToken(source.type, this.SHARE_TYPE_DICTIONARY),
+      durationValue,
+      source.description || "",
+      compactExercises.length > 0 ? compactExercises : "",
+      source.isTaperWeek ? 1 : 0,
+    ];
+
+    while (compactSession.length > 0) {
+      const tail = compactSession[compactSession.length - 1];
+      if (tail === "" || tail === 0) {
+        compactSession.pop();
+      } else {
+        break;
+      }
+    }
+
+    return compactSession;
+  },
+
+  sessionsAreEqual(a, b) {
+    return JSON.stringify(this.compactSession(a)) === JSON.stringify(this.compactSession(b));
+  },
+
+  expandSession(compactSession) {
+    const source = Array.isArray(compactSession) ? compactSession : [];
+    const exerciseDictionary = window.RunningPlan.STRENGTH_EXERCISES || [];
+
+    const compactExercises = source[5];
+    const exercises =
+      Array.isArray(compactExercises) && compactExercises.length > 0
+        ? compactExercises.map((exercise) => this.fromShareToken(exercise, exerciseDictionary))
+        : null;
+
+    return {
+      day: this.fromShareToken(source[0], this.DAY_NAMES),
+      dateLabel: source[1] || "",
+      type: this.fromShareToken(source[2], this.SHARE_TYPE_DICTIONARY),
+      duration: source.length > 3 ? source[3] : 0,
+      description: source[4] || null,
+      exercises,
+      isTaperWeek: Boolean(source[6]),
+    };
+  },
+
+  toCompactSharePayload(payload) {
+    const source = payload && typeof payload === "object" ? payload : {};
+    const form = source.form && typeof source.form === "object" ? source.form : {};
+    const plan = Array.isArray(source.plan) ? source.plan : [];
+    const firstSession = plan[0] && plan[0][0] ? plan[0][0] : null;
+    const startDate = firstSession ? this.parseDateLabel(firstSession.dateLabel) : null;
+    const expectedTimeMinutes = this.parseExpectedTime(form.expectedTime || "");
+    const canBuildBasePlan =
+      Boolean(startDate) &&
+      Boolean(form.eventDate) &&
+      Boolean(form.trainingDaysPerWeek) &&
+      Boolean(expectedTimeMinutes);
+
+    if (canBuildBasePlan) {
+      const basePlan = this.buildWeeklyPlan({
+        eventDateStr: form.eventDate,
+        expectedTimeMinutes,
+        trainingDaysPerWeek: form.trainingDaysPerWeek,
+        startDateStr: this.toDateInput(startDate),
+      });
+
+      if (Array.isArray(basePlan) && basePlan.length === plan.length) {
+        const edits = [];
+        let sameStructure = true;
+
+        for (let weekIndex = 0; weekIndex < plan.length; weekIndex += 1) {
+          const sourceWeek = Array.isArray(plan[weekIndex]) ? plan[weekIndex] : [];
+          const baseWeek = Array.isArray(basePlan[weekIndex]) ? basePlan[weekIndex] : [];
+
+          if (sourceWeek.length !== baseWeek.length) {
+            sameStructure = false;
+            break;
+          }
+
+          for (let dayIndex = 0; dayIndex < sourceWeek.length; dayIndex += 1) {
+            if (!this.sessionsAreEqual(sourceWeek[dayIndex], baseWeek[dayIndex])) {
+              edits.push([weekIndex, dayIndex, this.compactSession(sourceWeek[dayIndex])]);
+            }
+          }
+        }
+
+        if (sameStructure) {
+          return {
+            v: 3,
+            n: source.planName || "",
+            f: [
+              form.eventDate || "",
+              form.distance || "",
+              form.expectedTime || "",
+              form.trainingDaysPerWeek || "",
+              this.toDateInput(startDate),
+            ],
+            e: edits,
+          };
+        }
+      }
+    }
+
+    return {
+      v: 2,
+      n: source.planName || "",
+      f: [
+        form.eventDate || "",
+        form.distance || "",
+        form.expectedTime || "",
+        form.trainingDaysPerWeek || "",
+      ],
+      p: Array.isArray(source.plan)
+        ? source.plan.map((week) =>
+            Array.isArray(week) ? week.map((session) => this.compactSession(session)) : []
+          )
+        : [],
+    };
+  },
+
+  fromCompactSharePayload(payload) {
+    if (!payload || typeof payload !== "object") {
+      return null;
+    }
+
+    if (payload.v === 3) {
+      const form = Array.isArray(payload.f) ? payload.f : [];
+      const baseForm = {
+        eventDate: form[0] || "",
+        distance: form[1] || "",
+        expectedTime: form[2] || "",
+        trainingDaysPerWeek: form[3] || "",
+      };
+      const startDateStr = form[4] || "";
+      const expectedTimeMinutes = this.parseExpectedTime(baseForm.expectedTime);
+
+      if (!startDateStr || !expectedTimeMinutes || !baseForm.trainingDaysPerWeek) {
+        return null;
+      }
+
+      const basePlan = this.buildWeeklyPlan({
+        eventDateStr: baseForm.eventDate,
+        expectedTimeMinutes,
+        trainingDaysPerWeek: baseForm.trainingDaysPerWeek,
+        startDateStr,
+      });
+
+      const edits = Array.isArray(payload.e) ? payload.e : [];
+      edits.forEach((edit) => {
+        if (!Array.isArray(edit) || edit.length < 3) return;
+        const weekIndex = Number(edit[0]);
+        const dayIndex = Number(edit[1]);
+        const session = this.expandSession(edit[2]);
+
+        if (
+          Number.isNaN(weekIndex) ||
+          Number.isNaN(dayIndex) ||
+          !basePlan[weekIndex] ||
+          !basePlan[weekIndex][dayIndex]
+        ) {
+          return;
+        }
+
+        basePlan[weekIndex][dayIndex] = session;
+      });
+
+      return {
+        v: 3,
+        planName: payload.n || "",
+        form: baseForm,
+        plan: basePlan,
+      };
+    }
+
+    if (payload.v !== 2 || !Array.isArray(payload.p)) return null;
+
+    const form = Array.isArray(payload.f) ? payload.f : [];
+
+    return {
+      v: 2,
+      planName: payload.n || "",
+      form: {
+        eventDate: form[0] || "",
+        distance: form[1] || "",
+        expectedTime: form[2] || "",
+        trainingDaysPerWeek: form[3] || "",
+      },
+      plan: payload.p.map((week) =>
+        Array.isArray(week) ? week.map((session) => this.expandSession(session)) : []
+      ),
+    };
   },
 
   encodeBase64Url(value) {
@@ -100,7 +409,8 @@ window.RunningPlan.utils = {
 
   encodeSharePayload(payload) {
     try {
-      const json = JSON.stringify(payload);
+      const compactPayload = this.toCompactSharePayload(payload);
+      const json = JSON.stringify(compactPayload);
       return this.encodeBase64Url(json);
     } catch (_error) {
       return "";
@@ -113,9 +423,7 @@ window.RunningPlan.utils = {
       if (!decoded) return null;
 
       const parsed = JSON.parse(decoded);
-      if (!parsed || typeof parsed !== "object") return null;
-
-      return parsed;
+      return this.fromCompactSharePayload(parsed);
     } catch (_error) {
       return null;
     }
@@ -125,14 +433,14 @@ window.RunningPlan.utils = {
     const encoded = this.encodeSharePayload(payload);
     if (!encoded) return "";
 
-    return `${window.RunningPlan.SHARE_BASE_URL}?params=${encodeURIComponent(encoded)}`;
+    return `${window.RunningPlan.SHARE_BASE_URL}#params=${encodeURIComponent(encoded)}`;
   },
 
-  getSharePayloadFromSearch(search) {
-    const source = String(search || "");
-    if (!source) return null;
+  getSharePayloadFromHash(hash) {
+    const source = String(hash || "");
+    if (!source || !source.startsWith("#")) return null;
 
-    const query = source.startsWith("?") ? source.slice(1) : source;
+    const query = source.slice(1);
     const params = new URLSearchParams(query);
     const encoded = params.get("params");
 
@@ -164,18 +472,22 @@ window.RunningPlan.utils = {
     return null;
   },
 
-  buildWeeklyPlan({ eventDateStr, daysRemaining, expectedTimeMinutes, trainingDaysPerWeek }) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  buildWeeklyPlan({
+    eventDateStr,
+    daysRemaining,
+    expectedTimeMinutes,
+    trainingDaysPerWeek,
+    startDateStr,
+  }) {
+    const today = startDateStr ? this.parseDateInput(startDateStr) : null;
+    const startDay = today || new Date();
+    startDay.setHours(0, 0, 0, 0);
 
-    const eventDate = eventDateStr ? new Date(eventDateStr) : null;
-    if (eventDate) {
-      eventDate.setHours(0, 0, 0, 0);
-    }
+    const eventDate = eventDateStr ? this.parseDateInput(eventDateStr) : null;
 
     let totalDays;
     if (eventDate && !Number.isNaN(eventDate.getTime())) {
-      totalDays = Math.floor((eventDate - today) / (1000 * 60 * 60 * 24)) + 1;
+      totalDays = this.daysDiffByCalendar(startDay, eventDate) + 1;
     } else if (typeof daysRemaining === "number") {
       totalDays = daysRemaining + 1;
     } else {
@@ -199,8 +511,8 @@ window.RunningPlan.utils = {
         plan[weekIndex] = [];
       }
 
-      const currentDate = new Date(today);
-      currentDate.setDate(today.getDate() + dayOffset);
+      const currentDate = new Date(startDay);
+      currentDate.setDate(startDay.getDate() + dayOffset);
 
       const dayName = this.DAY_NAMES[currentDate.getDay()];
       const daysUntilRace = totalDays - dayOffset - 1;
@@ -293,7 +605,8 @@ window.RunningPlan.utils = {
           ? "Reduced intensity intervals (taper week)"
           : "High Intensity Interval Training";
       } else if (sessionConfig.type === "Long Indoor Cycling") {
-        const baseDuration = Math.round((60 + Math.random() * 10) * intensityFactor);
+        const variability = (weekIndex * 17 + dayOffset * 13) % 11;
+        const baseDuration = Math.round((60 + variability) * intensityFactor);
         duration = isTaperWeek ? Math.max(30, Math.round(baseDuration * 0.6)) : baseDuration;
         description = isTaperWeek ? "Steady easy ride (taper week)" : "Steady long ride";
       } else if (sessionConfig.type === "Outdoor Slow Run") {

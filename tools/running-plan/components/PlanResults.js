@@ -1,6 +1,6 @@
 window.RunningPlan = window.RunningPlan || {};
 
-const { useState } = React;
+const { useMemo, useState } = React;
 
 const PlanResults = function PlanResults({
   plan,
@@ -18,6 +18,30 @@ const PlanResults = function PlanResults({
   const [isEditing, setIsEditing] = useState(false);
   const [activeEditorKey, setActiveEditorKey] = useState(null);
 
+  const editableSessions = useMemo(
+    () =>
+      plan.flatMap((week, weekIndex) =>
+        week.map((session, dayIndex) => ({
+          key: `${weekIndex}-${dayIndex}`,
+          weekIndex,
+          dayIndex,
+          label: `Week ${weekIndex + 1} - ${session.day || `Day ${dayIndex + 1}`}`,
+        }))
+      ),
+    [plan]
+  );
+
+  const activeEditorIndex = useMemo(() => {
+    if (!activeEditorKey) return -1;
+    return editableSessions.findIndex((session) => session.key === activeEditorKey);
+  }, [editableSessions, activeEditorKey]);
+
+  const activeEditor = activeEditorIndex >= 0 ? editableSessions[activeEditorIndex] : null;
+  const activeSession =
+    activeEditor && plan[activeEditor.weekIndex]
+      ? plan[activeEditor.weekIndex][activeEditor.dayIndex]
+      : null;
+
   const toggleEditing = () => {
     setIsEditing((prev) => {
       const next = !prev;
@@ -25,6 +49,31 @@ const PlanResults = function PlanResults({
       return next;
     });
   };
+
+  const openEditor = (weekIndex, dayIndex) => {
+    setActiveEditorKey(`${weekIndex}-${dayIndex}`);
+  };
+
+  const closeEditor = () => {
+    setActiveEditorKey(null);
+  };
+
+  const navigateEditorBy = (offset) => {
+    if (activeEditorIndex < 0) return;
+
+    const nextIndex = activeEditorIndex + offset;
+    if (nextIndex < 0 || nextIndex >= editableSessions.length) return;
+
+    setActiveEditorKey(editableSessions[nextIndex].key);
+  };
+
+  const parseExercises = (value) =>
+    value
+      ? value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : null;
 
   const renderReadOnlySession = (session) => (
     <>
@@ -88,7 +137,7 @@ const PlanResults = function PlanResults({
         </button>
         {isEditing ? (
           <span className="text-sm text-gray-600">
-            Click "Edit day" on a card to modify only that day.
+            Pick one card to edit. Use Previous/Next inside the editor panel.
           </span>
         ) : null}
       </div>
@@ -100,6 +149,7 @@ const PlanResults = function PlanResults({
             type="text"
             readOnly
             value={shareUrl}
+            aria-label="Share URL"
             className="w-full rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700"
           />
           <button
@@ -141,114 +191,32 @@ const PlanResults = function PlanResults({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {week.map((session, dayIndex) => {
                 const sessionKey = `${weekIndex}-${dayIndex}`;
-                const isThisSessionEditing = isEditing && activeEditorKey === sessionKey;
+                const isSelected = activeEditorKey === sessionKey;
 
                 return (
                   <div
                     key={dayIndex}
                     className={
                       session.type === "EVENT DAY"
-                        ? "rounded-md border-l-[3px] border-amber-500 bg-amber-50 p-4"
-                        : "rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4"
+                        ? `rounded-md border-l-[3px] border-amber-500 bg-amber-50 p-4 ${
+                            isSelected ? "ring-2 ring-amber-400" : ""
+                          }`
+                        : `rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4 ${
+                            isSelected ? "ring-2 ring-brand" : ""
+                          }`
                     }
                   >
-                    {isThisSessionEditing ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <p className="m-0 text-sm font-semibold text-brand">Editing day</p>
-                          <button
-                            type="button"
-                            onClick={() => setActiveEditorKey(null)}
-                            className="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs font-semibold text-gray-700 transition hover:bg-gray-100"
-                          >
-                            Done with day
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          <input
-                            type="text"
-                            value={session.day || ""}
-                            onChange={(e) =>
-                              onUpdateSession(weekIndex, dayIndex, { day: e.target.value })
-                            }
-                            className="rounded border border-gray-200 p-2 text-sm"
-                            placeholder="Day"
-                          />
-                          <input
-                            type="text"
-                            value={session.dateLabel || ""}
-                            onChange={(e) =>
-                              onUpdateSession(weekIndex, dayIndex, { dateLabel: e.target.value })
-                            }
-                            className="rounded border border-gray-200 p-2 text-sm"
-                            placeholder="Date"
-                          />
-                        </div>
-
-                        <input
-                          type="text"
-                          value={session.type || ""}
-                          onChange={(e) =>
-                            onUpdateSession(weekIndex, dayIndex, { type: e.target.value })
-                          }
-                          className="w-full rounded border border-gray-200 p-2 text-sm"
-                          placeholder="Session type"
-                        />
-
-                        <input
-                          type="text"
-                          value={session.duration ?? ""}
-                          onChange={(e) =>
-                            onUpdateSession(weekIndex, dayIndex, { duration: e.target.value })
-                          }
-                          className="w-full rounded border border-gray-200 p-2 text-sm"
-                          placeholder="Duration (minutes)"
-                        />
-
-                        <textarea
-                          value={session.description || ""}
-                          onChange={(e) =>
-                            onUpdateSession(weekIndex, dayIndex, { description: e.target.value })
-                          }
-                          className="w-full rounded border border-gray-200 p-2 text-sm"
-                          rows="2"
-                          placeholder="Description / notes"
-                        />
-
-                        <input
-                          type="text"
-                          value={
-                            Array.isArray(session.exercises) ? session.exercises.join(", ") : ""
-                          }
-                          onChange={(e) =>
-                            onUpdateSession(weekIndex, dayIndex, {
-                              exercises: e.target.value
-                                ? e.target.value
-                                    .split(",")
-                                    .map((item) => item.trim())
-                                    .filter(Boolean)
-                                : null,
-                            })
-                          }
-                          className="w-full rounded border border-gray-200 p-2 text-sm"
-                          placeholder="Exercises (comma-separated)"
-                        />
-                      </div>
-                    ) : (
-                      <>
-                        {renderReadOnlySession(session)}
-                        {isEditing ? (
-                          <button
-                            type="button"
-                            onClick={() => setActiveEditorKey(sessionKey)}
-                            className="mt-3 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100"
-                          >
-                            Edit day
-                          </button>
-                        ) : null}
-                      </>
-                    )}
+                    {renderReadOnlySession(session)}
+                    {isEditing ? (
+                      <button
+                        type="button"
+                        onClick={() => openEditor(weekIndex, dayIndex)}
+                        className="mt-3 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100"
+                        aria-label={`Edit ${session.day || `day ${dayIndex + 1}`}`}
+                      >
+                        {isSelected ? "Editing" : "Edit day"}
+                      </button>
+                    ) : null}
                   </div>
                 );
               })}
@@ -256,6 +224,179 @@ const PlanResults = function PlanResults({
           </div>
         );
       })}
+
+      {isEditing && activeSession ? (
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/30 p-0 print:hidden sm:items-center sm:p-6">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl sm:rounded-2xl sm:p-6">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-brand">Edit training day</h3>
+                <p className="m-0 text-sm text-gray-600">
+                  {activeEditor.label} ({activeEditorIndex + 1} of {editableSessions.length})
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100"
+              >
+                Close editor
+              </button>
+            </div>
+
+            <div className="mb-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => navigateEditorBy(-1)}
+                disabled={activeEditorIndex <= 0}
+                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Previous day
+              </button>
+              <button
+                type="button"
+                onClick={() => navigateEditorBy(1)}
+                disabled={activeEditorIndex >= editableSessions.length - 1}
+                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next day
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="editor-day"
+                    className="mb-1 block text-sm font-semibold text-brand"
+                  >
+                    Day
+                  </label>
+                  <input
+                    id="editor-day"
+                    type="text"
+                    value={activeSession.day || ""}
+                    onChange={(e) =>
+                      onUpdateSession(activeEditor.weekIndex, activeEditor.dayIndex, {
+                        day: e.target.value,
+                      })
+                    }
+                    className="w-full rounded border border-gray-200 p-2 text-sm"
+                    placeholder="Day"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="editor-date"
+                    className="mb-1 block text-sm font-semibold text-brand"
+                  >
+                    Date
+                  </label>
+                  <input
+                    id="editor-date"
+                    type="text"
+                    value={activeSession.dateLabel || ""}
+                    onChange={(e) =>
+                      onUpdateSession(activeEditor.weekIndex, activeEditor.dayIndex, {
+                        dateLabel: e.target.value,
+                      })
+                    }
+                    className="w-full rounded border border-gray-200 p-2 text-sm"
+                    placeholder="Date"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="editor-session-type"
+                  className="mb-1 block text-sm font-semibold text-brand"
+                >
+                  Session type
+                </label>
+                <input
+                  id="editor-session-type"
+                  type="text"
+                  value={activeSession.type || ""}
+                  onChange={(e) =>
+                    onUpdateSession(activeEditor.weekIndex, activeEditor.dayIndex, {
+                      type: e.target.value,
+                    })
+                  }
+                  className="w-full rounded border border-gray-200 p-2 text-sm"
+                  placeholder="Session type"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="editor-duration"
+                  className="mb-1 block text-sm font-semibold text-brand"
+                >
+                  Duration (minutes)
+                </label>
+                <input
+                  id="editor-duration"
+                  type="text"
+                  value={activeSession.duration ?? ""}
+                  onChange={(e) =>
+                    onUpdateSession(activeEditor.weekIndex, activeEditor.dayIndex, {
+                      duration: e.target.value,
+                    })
+                  }
+                  className="w-full rounded border border-gray-200 p-2 text-sm"
+                  placeholder="Duration (minutes)"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="editor-description"
+                  className="mb-1 block text-sm font-semibold text-brand"
+                >
+                  Description / notes
+                </label>
+                <textarea
+                  id="editor-description"
+                  value={activeSession.description || ""}
+                  onChange={(e) =>
+                    onUpdateSession(activeEditor.weekIndex, activeEditor.dayIndex, {
+                      description: e.target.value,
+                    })
+                  }
+                  className="w-full rounded border border-gray-200 p-2 text-sm"
+                  rows="3"
+                  placeholder="Description / notes"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="editor-exercises"
+                  className="mb-1 block text-sm font-semibold text-brand"
+                >
+                  Exercises (comma-separated)
+                </label>
+                <input
+                  id="editor-exercises"
+                  type="text"
+                  value={
+                    Array.isArray(activeSession.exercises) ? activeSession.exercises.join(", ") : ""
+                  }
+                  onChange={(e) =>
+                    onUpdateSession(activeEditor.weekIndex, activeEditor.dayIndex, {
+                      exercises: parseExercises(e.target.value),
+                    })
+                  }
+                  className="w-full rounded border border-gray-200 p-2 text-sm"
+                  placeholder="Exercises (comma-separated)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {isEditing ? (
         <div className="fixed bottom-4 right-4 z-30 print:hidden">

@@ -5,7 +5,7 @@ const { useMemo, useState } = React;
 function MarathonPrepBuilderApp() {
   const [sharedPayload] = useState(() => {
     if (typeof window === "undefined") return null;
-    return window.RunningPlan.utils.getSharePayloadFromSearch(window.location.search);
+    return window.RunningPlan.utils.getSharePayloadFromHash(window.location.hash);
   });
 
   const hasSharedPlan = Boolean(

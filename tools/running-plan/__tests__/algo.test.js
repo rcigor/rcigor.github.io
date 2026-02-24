@@ -18,9 +18,11 @@ describe("running-plan utils", () => {
     });
 
     const flattened = plan.flat();
+    const daysRemaining = utils.getDaysRemaining(eventDateStr).daysRemaining;
+    const expectedTotalDays = daysRemaining + 1;
 
-    expect(plan).toHaveLength(6);
-    expect(flattened).toHaveLength(36);
+    expect(plan).toHaveLength(Math.ceil(expectedTotalDays / 7));
+    expect(flattened).toHaveLength(expectedTotalDays);
     expect(plan[0]).toHaveLength(7);
     expect(plan[plan.length - 1].length).toBeGreaterThan(0);
 
@@ -31,7 +33,7 @@ describe("running-plan utils", () => {
 
     const eventDays = flattened.filter((session) => session.type === "EVENT DAY");
     expect(eventDays).toHaveLength(1);
-    expect(eventDays[0].dateLabel).toBe(utils.formatDate(new Date(eventDateStr)));
+    expect(eventDays[0].dateLabel).toBe(utils.formatDate(utils.parseDateInput(eventDateStr)));
 
     const taperSessions = flattened.filter((session) => session.isTaperWeek);
     expect(taperSessions.length).toBeGreaterThan(0);
@@ -59,13 +61,68 @@ describe("running-plan utils", () => {
     };
 
     const shareUrl = utils.buildShareUrl(payload);
-    expect(shareUrl.startsWith("https://igorcarreira.pt/tools/running-plan?params=")).toBe(true);
+    expect(shareUrl.startsWith("https://igorcarreira.pt/tools/running-plan#params=")).toBe(true);
 
-    const query = shareUrl.split("?")[1];
-    const decoded = utils.getSharePayloadFromSearch(query);
+    const hash = shareUrl.split("#")[1];
+    const decoded = utils.getSharePayloadFromHash(`#${hash}`);
 
     expect(decoded.planName).toBe(payload.planName);
     expect(decoded.form.distance).toBe("10k");
     expect(decoded.plan[0][0].type).toBe("EVENT DAY");
+  });
+
+  test("creates shorter share payload than legacy raw-json encoding", () => {
+    const utils = window.RunningPlan.utils;
+    const eventDate = new Date();
+    eventDate.setDate(eventDate.getDate() + 90);
+    const eventDateStr = eventDate.toISOString().split("T")[0];
+
+    const payload = {
+      v: 1,
+      planName: "Performance block",
+      form: {
+        eventDate: eventDateStr,
+        distance: "full",
+        expectedTime: "4:30",
+        trainingDaysPerWeek: "6",
+      },
+      plan: utils.buildWeeklyPlan({
+        eventDateStr,
+        expectedTimeMinutes: 270,
+        trainingDaysPerWeek: "6",
+      }),
+    };
+
+    const legacyEncoded = utils.encodeBase64Url(JSON.stringify(payload));
+    const compactEncoded = utils.encodeSharePayload(payload);
+
+    expect(compactEncoded.length).toBeLessThan(legacyEncoded.length);
+  });
+
+  test("keeps generated share URL short for unedited plans", () => {
+    const utils = window.RunningPlan.utils;
+    const eventDate = new Date();
+    eventDate.setDate(eventDate.getDate() + 90);
+    const eventDateStr = eventDate.toISOString().split("T")[0];
+
+    const plan = utils.buildWeeklyPlan({
+      eventDateStr,
+      expectedTimeMinutes: 270,
+      trainingDaysPerWeek: "6",
+    });
+
+    const shareUrl = utils.buildShareUrl({
+      v: 1,
+      planName: "Performance block",
+      form: {
+        eventDate: eventDateStr,
+        distance: "full",
+        expectedTime: "4:30",
+        trainingDaysPerWeek: "6",
+      },
+      plan,
+    });
+
+    expect(shareUrl.length).toBeLessThan(400);
   });
 });

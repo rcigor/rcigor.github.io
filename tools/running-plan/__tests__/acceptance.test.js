@@ -67,4 +67,40 @@ describe("Marathon builder acceptance flow", () => {
     expect(screen.getByText(/event day/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /print plan/i })).toBeInTheDocument();
   });
+
+  test("roundtrips a generated plan through share URL hash", () => {
+    const { MarathonPrepBuilderApp } = loadRunningPlanModules();
+    const firstRender = render(React.createElement(MarathonPrepBuilderApp));
+
+    acceptDisclaimer();
+
+    fireEvent.change(screen.getByLabelText(/when is your running event/i), {
+      target: { value: formatDateWithOffset(45) },
+    });
+    fireEvent.change(screen.getByLabelText(/choose your distance/i), {
+      target: { value: "10k" },
+    });
+    fireEvent.change(screen.getByLabelText(/expected finish time/i), {
+      target: { value: "1:05" },
+    });
+    fireEvent.change(screen.getByLabelText(/how many days per week will you train/i), {
+      target: { value: "4" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /generate training plan/i }));
+
+    const originalHeading = screen.getByRole("heading", { level: 2 }).textContent;
+    const shareUrl = screen.getByLabelText(/share url/i).value;
+    const hash = shareUrl.split("#")[1];
+
+    firstRender.unmount();
+    window.history.pushState({}, "", `/#${hash}`);
+
+    render(React.createElement(MarathonPrepBuilderApp));
+
+    expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(originalHeading);
+    expect(screen.getByText(/event day/i)).toBeInTheDocument();
+    expect(screen.queryByText(/important health and safety disclaimer/i)).not.toBeInTheDocument();
+
+    window.history.pushState({}, "", "/");
+  });
 });

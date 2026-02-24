@@ -3,8 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Igor Carreira</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Igor Carreira | Engineering Manager, Tech Lead, Senior Engineer</title>
+<meta name="description" content="AI-first engineering leader delivering resilient SaaS products and APIs. Tech Lead and Engineering Manager with proven cycle-time reduction and strong full-stack expertise.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://igorcarreira.pt/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Igor Carreira | Engineering Manager, Tech Lead, Senior Engineer">
+<meta property="og:description" content="Engineering leader with proven delivery impact: 40% cycle-time reduction, full-stack architecture, and remote team leadership.">
+<meta property="og:url" content="https://igorcarreira.pt/">
+<meta property="og:site_name" content="Igor Carreira">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Igor Carreira | Engineering Manager, Tech Lead, Senior Engineer">
+<meta name="twitter:description" content="AI-first engineering leader delivering resilient SaaS products and APIs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -12,7 +25,8 @@
       extend: {
         colors: {
           brand: '#194D33',
-          'brand-dark': '#0f2c1b'
+          'brand-dark': '#0f2c1b',
+          accent: '#B77A2A'
         },
         fontFamily: {
           sans: ['Inter', 'sans-serif']
@@ -21,42 +35,141 @@
     }
   };
 </script>
+<script>
+  window.siteAnalytics = window.siteAnalytics || {
+    plausibleDomain: '',
+    gaMeasurementId: ''
+  };
+
+  (function setupAnalytics() {
+    var cfg = window.siteAnalytics || {};
+    var plausibleDomain = typeof cfg.plausibleDomain === 'string' ? cfg.plausibleDomain.trim() : '';
+    var gaMeasurementId = typeof cfg.gaMeasurementId === 'string' ? cfg.gaMeasurementId.trim() : '';
+
+    if (plausibleDomain) {
+      var plausibleScript = document.createElement('script');
+      plausibleScript.defer = true;
+      plausibleScript.setAttribute('data-domain', plausibleDomain);
+      plausibleScript.src = 'https://plausible.io/js/script.outbound-links.pageview-props.js';
+      document.head.appendChild(plausibleScript);
+    }
+
+    if (gaMeasurementId) {
+      var gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaMeasurementId);
+      document.head.appendChild(gaScript);
+
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', gaMeasurementId, { anonymize_ip: true });
+    }
+
+    document.addEventListener('click', function(event) {
+      var link = event.target.closest('a[href]');
+      if (!link || !link.href) return;
+      if ((link.protocol === 'http:' || link.protocol === 'https:') && link.origin === window.location.origin) return;
+      if (!['http:', 'https:', 'mailto:'].includes(link.protocol)) return;
+
+      if (typeof window.plausible === 'function') {
+        window.plausible('outbound-click', { props: { href: link.href, text: (link.textContent || '').trim() } });
+      }
+
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'outbound_click', {
+          event_category: 'engagement',
+          event_label: link.href,
+          link_text: (link.textContent || '').trim(),
+          transport_type: 'beacon'
+        });
+      }
+    });
+  })();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Igor Carreira",
+  "jobTitle": "Engineering Manager | Tech Lead | Senior Engineer",
+  "url": "https://igorcarreira.pt/",
+  "email": "mailto:igor@kedb.net",
+  "sameAs": [
+    "https://www.linkedin.com/in/igorcarreira/",
+    "https://github.com/rcigor/"
+  ],
+  "knowsAbout": [
+    "Engineering Management",
+    "Domain-Driven Design",
+    "Extreme Programming",
+    "Ruby",
+    "Node.js",
+    "React",
+    "TypeScript"
+  ]
+}
+</script>
 </head>
-<body class="m-0 flex min-h-screen items-center justify-center bg-white font-sans text-brand">
-  <div class="w-full max-w-[800px] px-4 py-8 text-center sm:px-8">
-    <header>
-      <h1 class="mb-2 text-5xl font-bold">Igor Carreira</h1>
-      <p class="mb-8 text-[1.2em] text-[#444]">Tech Lead - Seasoned Developer - Engineering Manager</p>
+<body class="m-0 min-h-screen bg-gradient-to-b from-[#f7fbf8] via-white to-[#f3f7f4] font-sans text-brand">
+  <div class="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8">
+    <header class="mb-8 rounded-2xl border border-[#d9e8df] bg-white p-6 text-left shadow-sm sm:p-8">
+      <p class="mb-3 inline-block rounded-full bg-[#edf5f0] px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-brand">Open to remote leadership and senior IC roles • Open to start in early April</p>
+      <h1 class="mb-3 text-4xl font-extrabold leading-tight text-brand sm:text-5xl">Igor Carreira</h1>
+      <p class="mb-4 text-lg font-semibold text-[#2f6047]">Engineering Manager | Tech Lead | Senior Engineer</p>
+      <p class="mb-6 max-w-3xl text-base leading-relaxed text-[#365a48]">AI-first engineer/manager building cloud-based SaaS products and APIs. Guided by DDD/XP, I deliver resilient full-stack architectures from data-intensive backends to modern PWAs. Specially versed in Ruby, Node.js, React/TS, with a shift-left security mindset.</p>
+
+      <div class="mb-6 flex flex-wrap gap-3">
+        <a href="mailto:igor@kedb.net" class="rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-white no-underline transition hover:bg-brand-dark">Contact me</a>
+        <a href="cv.html" class="rounded-lg border border-brand bg-white px-5 py-3 text-sm font-semibold text-brand no-underline transition hover:bg-[#edf5f0]">View CV</a>
+        <a href="CV.pdf" download class="rounded-lg border border-brand bg-white px-5 py-3 text-sm font-semibold text-brand no-underline transition hover:bg-[#edf5f0]">Download CV (PDF)</a>
+      </div>
+
     </header>
 
-    <main>
-      <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <a href="tools/index.html" class="rounded-[8px] bg-brand px-[1.5em] py-[0.8em] text-[16px] font-semibold text-white no-underline transition-[transform,background-color] duration-200 hover:scale-105 hover:bg-brand-dark">Tools</a>
-        <a href="manager_manifesto.html" class="rounded-[8px] bg-brand px-[1.5em] py-[0.8em] text-[16px] font-semibold text-white no-underline transition-[transform,background-color] duration-200 hover:scale-105 hover:bg-brand-dark">Manager manifesto</a>
-        <a href="cv.html" class="rounded-[8px] bg-brand px-[1.5em] py-[0.8em] text-[16px] font-semibold text-white no-underline transition-[transform,background-color] duration-200 hover:scale-105 hover:bg-brand-dark">CV</a>
-        <a href="#" class="pointer-events-none cursor-default rounded-[8px] bg-[#aaa] px-[1.5em] py-[0.8em] text-[16px] font-semibold text-white no-underline">Opinions</a>
-      </div>
+    <main class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <section class="rounded-2xl border border-[#d9e8df] bg-white p-6 shadow-sm lg:col-span-2">
+        <h2 class="mb-4 text-xl font-bold">How I Work</h2>
+        <ul class="m-0 space-y-3 pl-5 text-sm leading-relaxed text-[#3f5f4d]">
+          <li><strong>AI-first execution:</strong> I use AI as an amplifier across planning, coding, testing, and documentation, paired with XP practices: small batches, test-first development, and rapid feedback.</li>
+          <li><strong>Architecture simplicity:</strong> I keep systems lean, clear, and easy to change.</li>
+          <li><strong>Domain-Driven Design (DDD):</strong> Proven track record applying DDD with layered, modular architectures designed for maximum orthogonality.</li>
+          <li><strong>Leadership and coaching:</strong> I mentor engineers and align cross-functional teams in remote-first organizations.</li>
+          <li><strong>Data-driven outcomes:</strong> I translate product goals into measurable engineering results that improve delivery speed, reliability, and user impact.</li>
+        </ul>
+      </section>
+
+      <section class="rounded-2xl border border-[#d9e8df] bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-xl font-bold">Explore</h2>
+        <div class="grid grid-cols-1 gap-3">
+          <a href="manager_manifesto.html" class="rounded-lg bg-brand px-4 py-3 text-center text-sm font-semibold text-white no-underline transition hover:bg-brand-dark">Manager Manifesto</a>
+          <a href="tools/index.html" class="rounded-lg bg-brand px-4 py-3 text-center text-sm font-semibold text-white no-underline transition hover:bg-brand-dark">Tools</a>
+          <a href="#" class="pointer-events-none cursor-default rounded-lg bg-[#b7b7b7] px-4 py-3 text-center text-sm font-semibold text-white no-underline">Blog (coming soon)</a>
+        </div>
+      </section>
     </main>
 
-    <footer class="mt-8 text-sm text-[#666]">
-      <div class="mb-4 flex justify-center gap-12">
-        <a href="https://www.linkedin.com/in/igorcarreira/" target="_blank" aria-label="LinkedIn" class="inline-flex items-center justify-center text-brand no-underline visited:text-brand transition-opacity duration-200 hover:opacity-70">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-          </svg>
-        </a>
-        <a href="https://github.com/rcigor/" target="_blank" aria-label="Github" class="inline-flex items-center justify-center text-brand no-underline visited:text-brand transition-opacity duration-200 hover:opacity-70">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-        </a>
-        <a href="mailto:igor@kedb.net" aria-label="Email" class="inline-flex items-center justify-center text-brand no-underline visited:text-brand transition-opacity duration-200 hover:opacity-70">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-          </svg>
-        </a>
+    <footer class="mt-8 rounded-2xl border border-[#d9e8df] bg-white p-6 text-sm text-[#4f6d5d] shadow-sm">
+      <div class="mb-4 flex flex-wrap items-center justify-center gap-6">
+        <div class="flex items-center gap-6">
+          <a href="https://www.linkedin.com/in/igorcarreira/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="inline-flex items-center justify-center text-brand no-underline visited:text-brand transition-opacity duration-200 hover:opacity-70">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+            </svg>
+          </a>
+          <a href="https://github.com/rcigor/" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="inline-flex items-center justify-center text-brand no-underline visited:text-brand transition-opacity duration-200 hover:opacity-70">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="mailto:igor@kedb.net" aria-label="Email" class="inline-flex items-center justify-center text-brand no-underline visited:text-brand transition-opacity duration-200 hover:opacity-70">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+          </a>
+        </div>
       </div>
-      <p>© 2026 Igor Carreira. All rights reserved.</p>
+      <p class="m-0 text-center">Aveiro, Portugal - © 2026 Igor Carreira. All rights reserved.</p>
     </footer>
   </div>
 </body>

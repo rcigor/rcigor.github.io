@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Igor Carreira | Engineering Manager, Tech Lead, Senior Engineer</title>
+<meta name="description" content="AI-first engineering leader building cloud-based SaaS products and APIs with DDD/XP, resilient full-stack architecture, and data-driven delivery outcomes.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://igorcarreira.pt/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Igor Carreira | Engineering Manager, Tech Lead, Senior Engineer">
+<meta property="og:description" content="AI-first engineering leader delivering resilient SaaS products and APIs through DDD/XP and full-stack execution.">
+<meta property="og:url" content="https://igorcarreira.pt/">
+<meta property="og:site_name" content="Igor Carreira">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Igor Carreira | Engineering Manager, Tech Lead, Senior Engineer">
+<meta name="twitter:description" content="AI-first engineering leader delivering resilient SaaS products and APIs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: '#F2C94C',
+          'brand-dark': '#D4AB2B',
+          ink: '#2B2B2B',
+          stone: '#ECECEC',
+          slate: '#6B7280'
+        },
+        fontFamily: {
+          sans: ['Manrope', 'sans-serif'],
+          display: ['Space Grotesk', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  :root {
+    --brand: #f2c94c;
+    --ink: #2b2b2b;
+    --paper: #ffffff;
+    --mist: #ececec;
+    --slate: #6b7280;
+  }
+
+  .hero-glow {
+    background:
+      radial-gradient(circle at 12% 22%, rgba(242, 201, 76, 0.35), transparent 38%),
+      radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.12), transparent 32%),
+      linear-gradient(135deg, #2a2a2a 0%, #343434 46%, #2d2d2d 100%);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    animation: rise 560ms ease forwards;
+  }
+
+  .delay-1 { animation-delay: 60ms; }
+  .delay-2 { animation-delay: 130ms; }
+  .delay-3 { animation-delay: 200ms; }
+  .delay-4 { animation-delay: 270ms; }
+  .delay-5 { animation-delay: 340ms; }
+</style>
+<script>
+  window.siteAnalytics = window.siteAnalytics || {
+    plausibleDomain: '',
+    gaMeasurementId: ''
+  };
+
+  (function setupAnalytics() {
+    var cfg = window.siteAnalytics || {};
+    var plausibleDomain = typeof cfg.plausibleDomain === 'string' ? cfg.plausibleDomain.trim() : '';
+    var gaMeasurementId = typeof cfg.gaMeasurementId === 'string' ? cfg.gaMeasurementId.trim() : '';
+
+    if (plausibleDomain) {
+      var plausibleScript = document.createElement('script');
+      plausibleScript.defer = true;
+      plausibleScript.setAttribute('data-domain', plausibleDomain);
+      plausibleScript.src = 'https://plausible.io/js/script.outbound-links.pageview-props.js';
+      document.head.appendChild(plausibleScript);
+    }
+
+    if (gaMeasurementId) {
+      var gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaMeasurementId);
+      document.head.appendChild(gaScript);
+
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', gaMeasurementId, { anonymize_ip: true });
+    }
+
+    document.addEventListener('click', function(event) {
+      var link = event.target.closest('a[href]');
+      if (!link || !link.href) return;
+      if ((link.protocol === 'http:' || link.protocol === 'https:') && link.origin === window.location.origin) return;
+      if (!['http:', 'https:', 'mailto:'].includes(link.protocol)) return;
+
+      if (typeof window.plausible === 'function') {
+        window.plausible('outbound-click', { props: { href: link.href, text: (link.textContent || '').trim() } });
+      }
+
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'outbound_click', {
+          event_category: 'engagement',
+          event_label: link.href,
+          link_text: (link.textContent || '').trim(),
+          transport_type: 'beacon'
+        });
+      }
+    });
+  })();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Igor Carreira",
+  "jobTitle": "Engineering Manager | Tech Lead | Senior Engineer",
+  "url": "https://igorcarreira.pt/",
+  "email": "mailto:igor@kedb.net",
+  "sameAs": [
+    "https://www.linkedin.com/in/igorcarreira/",
+    "https://github.com/rcigor/"
+  ],
+  "knowsAbout": [
+    "Engineering Management",
+    "Domain-Driven Design",
+    "Extreme Programming",
+    "Ruby",
+    "Node.js",
+    "React",
+    "TypeScript"
+  ]
+}
+</script>
+</head>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="hero-glow relative w-full overflow-hidden border-b-4 border-brand text-white">
+    <div class="relative px-6 py-12 sm:px-10 lg:px-16 lg:py-16">
+      <p class="reveal delay-1 mb-4 inline-block rounded-md border border-[#f0d29a] bg-[#fff4dc] px-4 py-1.5 text-sm text-[#6a4a1f] shadow-sm">Open to remote leadership and senior individual contributor roles - <span class="font-bold">Available from early April</span></p>
+      <h1 class="reveal delay-2 mb-3 font-display text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Igor Carreira</h1>
+      <p class="reveal delay-3 mb-3 text-xl font-semibold text-[#f3f4f6]">Engineering Manager | Tech Lead | Senior Engineer</p>
+      <p class="reveal delay-4 max-w-4xl text-base leading-relaxed text-[#e5e7eb] sm:text-lg">AI-first engineer/manager building cloud-based SaaS products and APIs. Guided by DDD/XP, I deliver resilient full-stack architectures from data-intensive backends to modern PWAs. Specially versed in Ruby, Node.js, React/TS, with a shift-left security mindset.</p>
+
+      <div class="reveal delay-5 mt-8 flex flex-wrap gap-3">
+        <a href="mailto:igor@kedb.net" class="rounded-md bg-brand px-5 py-3 text-sm font-semibold text-ink no-underline transition hover:bg-brand-dark">Contact me</a>
+        <a href="cv.html" class="rounded-md border border-white bg-transparent px-5 py-3 text-sm font-semibold text-white no-underline transition hover:bg-white hover:text-ink">View CV</a>
+        <a href="CV.pdf" download class="rounded-md border border-[#f0d29a] bg-[#343434] px-5 py-3 text-sm font-semibold text-[#ffe7a0] no-underline transition hover:bg-[#404040]">Download CV (PDF)</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full">
+    <section class="reveal delay-1 w-full border-y border-[#d2d2d2] bg-white px-6 py-10 sm:px-10 lg:px-16 lg:py-14">
+      <h2 class="mb-5 font-display text-3xl font-bold tracking-tight text-ink">How I Work</h2>
+      <ul class="m-0 space-y-4 pl-5 text-[15px] leading-relaxed text-[#2f2f2f]">
+        <li><strong class="text-ink">AI-first execution:</strong> I use AI as an amplifier across planning, coding, testing, and documentation, paired with XP practices: small batches, test-first development, and rapid feedback.</li>
+        <li><strong class="text-ink">Architecture simplicity:</strong> I keep systems lean, clear, and easy to change.</li>
+        <li><strong class="text-ink">Domain-Driven Design (DDD):</strong> Proven track record applying DDD with layered, modular architectures designed for maximum orthogonality.</li>
+        <li><strong class="text-ink">Leadership and coaching:</strong> I mentor engineers and align cross-functional teams in remote-first organizations.</li>
+        <li><strong class="text-ink">Data-driven outcomes:</strong> I translate product goals into measurable engineering results that improve delivery speed, reliability, and user impact.</li>
+      </ul>
+    </section>
+
+    <section class="reveal delay-2 w-full border-y border-[#d2d2d2] bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <a href="manager_manifesto.html" class="group rounded-xl border-2 border-[#2b2b2b] bg-white px-5 py-4 text-[#1f1f1f] no-underline transition hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+          <span class="flex items-center justify-between">
+            <span class="font-display text-lg font-semibold">Manager Manifesto</span>
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#2b2b2b] text-brand transition group-hover:bg-brand group-hover:text-[#1f1f1f]">↗</span>
+          </span>
+        </a>
+        <a href="tools/index.html" class="group rounded-xl border-2 border-[#2b2b2b] bg-white px-5 py-4 text-[#1f1f1f] no-underline transition hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+          <span class="flex items-center justify-between">
+            <span class="font-display text-lg font-semibold">Tools</span>
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#2b2b2b] text-brand transition group-hover:bg-brand group-hover:text-[#1f1f1f]">↗</span>
+          </span>
+        </a>
+        <a href="#" class="pointer-events-none cursor-default rounded-xl border-2 border-[#c8c8c8] bg-[#e3e3e3] px-5 py-4 text-[#808080] no-underline">
+          <span class="flex items-center justify-between">
+            <span class="font-display text-lg font-semibold">Blog (coming soon)</span>
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#cfcfcf] text-[#8d8d8d]">•</span>
+          </span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-8 sm:px-10 lg:px-16">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-6">
+        <a href="https://www.linkedin.com/in/igorcarreira/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="inline-flex items-center justify-center text-[#f1f5f9] no-underline transition-colors duration-200 hover:text-brand">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+          </svg>
+        </a>
+        <a href="https://github.com/rcigor/" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="inline-flex items-center justify-center text-[#f1f5f9] no-underline transition-colors duration-200 hover:text-brand">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+        </a>
+        <a href="mailto:igor@kedb.net" aria-label="Email" class="inline-flex items-center justify-center text-[#f1f5f9] no-underline transition-colors duration-200 hover:text-brand">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+        </a>
+      </div>
+      <p class="m-0 text-sm text-[#c7c7c7]">Aveiro, Portugal - &copy; 2026 Igor Carreira. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

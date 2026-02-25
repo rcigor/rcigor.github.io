@@ -14,13 +14,13 @@ const DisclaimerGate = function DisclaimerGate({ onAccept, onDecline }) {
           alt="Back"
           width="20"
           height="20"
-          className="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]"
+          className="opacity-70"
         />{" "}
         Back
       </a>
 
       <header className="mb-8">
-        <h1 className="mb-2 text-5xl font-bold text-brand">Event-Day Run Planner</h1>
+        <h1 className="mb-2 text-5xl font-bold text-ink">Event-Day Run Planner</h1>
         <p className="m-0 text-[1.2em] text-[#444]">Please read before using this tool.</p>
       </header>
 
@@ -58,7 +58,7 @@ const DisclaimerGate = function DisclaimerGate({ onAccept, onDecline }) {
             type="button"
             disabled={!checked}
             onClick={onAccept}
-            className="rounded-lg bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="rounded-lg bg-brand px-5 py-2.5 font-semibold text-ink transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             Accept and continue
           </button>

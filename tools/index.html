@@ -4,41 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tools</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: '#194D33',
-            'brand-dark': '#0f2c1b'
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif']
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
           }
         }
       }
     };
   </script>
 </head>
-<body class="m-0 flex min-h-screen items-center justify-center bg-white font-sans text-brand">
-  <div class="w-full max-w-[800px] px-4 py-8 text-center sm:px-8">
-    <header>
-      <h1 class="mb-2 text-5xl font-bold">Tools</h1>
-      <p class="mb-8 text-[1.2em] text-[#444]"><a href="../index.html" class="inline-flex items-center gap-2 no-underline"><img src="../back-arrow.svg" alt="Back" width="20" height="20" class="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back</a></p>
-    </header>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Tools</h1>
+    </div>
+  </header>
 
-    <main>
-      <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <a href="retrospective_template.html" class="rounded-lg bg-brand px-6 py-[3.2em] text-[1.1rem] font-semibold text-white transition duration-200 hover:scale-105 hover:bg-brand-dark">Retrospective Template</a>
-        <a href="running-plan.html" class="rounded-lg bg-brand px-6 py-[3.2em] text-[1.1rem] font-semibold text-white transition duration-200 hover:scale-105 hover:bg-brand-dark">Event-Day Run Planner</a>
-      </div>
-    </main>
+  <main class="w-full bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <a href="retrospective_template.html" class="group rounded-xl border-2 border-[#2b2b2b] bg-white px-6 py-12 text-[#1f1f1f] no-underline transition hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+        <span class="flex items-center justify-between">
+          <span class="font-display text-xl font-semibold">Retrospective Template</span>
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#2b2b2b] text-brand transition group-hover:bg-brand group-hover:text-[#1f1f1f]">↗</span>
+        </span>
+      </a>
+      <a href="running-plan.html" class="group rounded-xl border-2 border-[#2b2b2b] bg-white px-6 py-12 text-[#1f1f1f] no-underline transition hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+        <span class="flex items-center justify-between">
+          <span class="font-display text-xl font-semibold">Event-Day Run Planner</span>
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#2b2b2b] text-brand transition group-hover:bg-brand group-hover:text-[#1f1f1f]">↗</span>
+        </span>
+      </a>
+    </div>
+  </main>
 
-    <footer class="mt-8 text-sm text-[#666]">
-      <p>© 2026 Igor Carreira. All rights reserved.</p>
-    </footer>
-  </div>
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Aveiro, Portugal - &copy; 2026 Igor Carreira. All rights reserved.</p>
+  </footer>
 </body>
 </html>

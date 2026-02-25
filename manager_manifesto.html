@@ -4,38 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manager Manifesto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: '#194D33',
-            'brand-dark': '#0f2c1b'
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif']
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
           }
         }
       }
     };
   </script>
 </head>
-<body class="m-0 flex min-h-screen items-center justify-center bg-white font-sans text-brand">
-  <div class="w-full max-w-[800px] px-4 py-8 text-center sm:px-8">
-    <header>
-      <h1 class="mb-2 text-5xl font-bold">Manager Manifesto</h1>
-      <p class="mb-8 text-[1.2em] text-[#444]"><a href="index.html" class="inline-flex items-center gap-2 no-underline"><img src="back-arrow.svg" alt="Back" width="20" height="20" class="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back</a></p>
-    </header>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Manager Manifesto</h1>
+    </div>
+  </header>
 
-    <main>
-      <img src="manager_manifesto.jpeg" alt="Manager Manifesto" class="m-0 h-auto w-full rounded-lg">
-    </main>
+  <main class="w-full bg-white px-6 py-10 sm:px-10 lg:px-16">
+    <div class="mx-auto w-full max-w-5xl">
+      <img src="manager_manifesto.jpeg" alt="Manager Manifesto" class="m-0 h-auto w-full rounded-xl border border-[#d2d2d2] shadow-[0_12px_28px_rgba(0,0,0,0.12)]">
+    </div>
+  </main>
 
-    <footer class="mt-8 text-sm text-[#666]">
-      <p>© 2026 Igor Carreira. All rights reserved.</p>
-    </footer>
-  </div>
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Aveiro, Portugal - &copy; 2026 Igor Carreira. All rights reserved.</p>
+  </footer>
 </body>
 </html>

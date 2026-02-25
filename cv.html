@@ -4,46 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CV - Igor Carreira</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: '#194D33',
-            'brand-dark': '#0f2c1b'
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif']
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
           }
         }
       }
     };
   </script>
 </head>
-<body class="m-0 bg-white px-4 py-8 font-sans text-brand sm:px-8">
-  <div class="mx-auto w-full max-w-[800px] text-left">
+<body class="m-0 min-h-screen bg-stone px-4 py-8 font-sans text-ink antialiased sm:px-8">
+  <div class="mx-auto w-full max-w-[980px] rounded-xl border border-[#d2d2d2] bg-white px-6 py-8 text-left shadow-[0_10px_24px_rgba(0,0,0,0.08)] sm:px-8">
     <header class="mb-10">
       <h1 class="mb-2 text-center text-5xl font-bold">CV</h1>
       <div class="mb-8 flex flex-wrap items-center justify-between gap-3 text-[#444]">
-        <a href="index.html" class="inline-flex items-center gap-2 text-inherit no-underline"><img src="back-arrow.svg" alt="Back" width="20" height="20" class="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back</a>
-        <a href="CV.pdf" download class="inline-flex items-center whitespace-nowrap rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white no-underline transition hover:bg-brand-dark">Download PDF</a>
+        <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#4b5563] no-underline transition hover:text-ink">&larr; Back</a>
+        <a href="CV.pdf" download class="inline-flex items-center whitespace-nowrap rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-ink no-underline transition hover:bg-brand-dark">Download PDF</a>
       </div>
 
       <div class="border-b-2 border-brand pb-8">
-        <h2 class="mb-2 text-4xl font-bold text-brand">Igor Carreira</h2>
+        <h2 class="mb-2 text-4xl font-bold text-ink">Igor Carreira</h2>
         <p class="mb-2 text-sm text-gray-600">Aveiro, Portugal • igor@kedb.net • linkedin.com/in/igorcarreira • igorcarreira.pt</p>
-        <p class="mb-0 text-lg font-semibold text-brand">Engineering Manager | Tech Lead | Senior Engineer (Remote)</p>
+        <p class="mb-0 text-lg font-semibold text-ink">Engineering Manager | Tech Lead | Senior Engineer (Remote)</p>
         <p class="mt-3 mb-0 text-sm leading-relaxed text-gray-700">AI-first engineer/manager building cloud-based products and APIs across industries. Guided by DDD/XP, I deliver resilient full-stack architectures, from data-intensive backends to modern PWAs. Specially versed in Ruby, Node.js, React/TS. Proven to reduce cycle time with XP practices (last project: 40% in 6 months). Shift-left security mindset.</p>
       </div>
     </header>
 
     <section class="mb-8">
-      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-brand">Work Experience</h3>
+      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-ink">Work Experience</h3>
 
       <div class="mb-6">
-        <h4 class="text-lg font-bold text-brand">AML RightSource</h4>
+        <h4 class="text-lg font-bold text-ink">AML RightSource</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">Tech Lead</p>
           <p class="m-0 text-sm italic text-gray-600">04/2023 - Present • Remote</p>
@@ -57,7 +63,7 @@
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-bold text-brand">Oyster HR</h4>
+        <h4 class="text-lg font-bold text-ink">Oyster HR</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">Engineering Manager</p>
           <p class="m-0 text-sm italic text-gray-600">01/2022 - 01/2023 • Remote</p>
@@ -69,7 +75,7 @@
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-bold text-brand">Lavanda</h4>
+        <h4 class="text-lg font-bold text-ink">Lavanda</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">Head of Engineering</p>
           <p class="m-0 text-sm italic text-gray-600">09/2016 - 01/2022 • London Area, United Kingdom</p>
@@ -90,7 +96,7 @@
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-bold text-brand">Your Golf Travel Limited</h4>
+        <h4 class="text-lg font-bold text-ink">Your Golf Travel Limited</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">Polyglot Developer</p>
           <p class="m-0 text-sm italic text-gray-600">11/2014 - 09/2016 • London Area, United Kingdom</p>
@@ -101,7 +107,7 @@
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-bold text-brand">PT Inovação</h4>
+        <h4 class="text-lg font-bold text-ink">PT Inovação</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">Full Stack Developer</p>
           <p class="m-0 text-sm italic text-gray-600">05/2009 - 10/2014 • Aveiro</p>
@@ -112,7 +118,7 @@
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-bold text-brand">Deloitte</h4>
+        <h4 class="text-lg font-bold text-ink">Deloitte</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">Consultant</p>
           <p class="m-0 text-sm italic text-gray-600">07/2007 - 05/2009 • Lisbon</p>
@@ -131,7 +137,7 @@
       </div>
 
       <div class="mb-0">
-        <h4 class="text-lg font-bold text-brand">ÀVendaPeloDono (retired property portal)</h4>
+        <h4 class="text-lg font-bold text-ink">ÀVendaPeloDono (retired property portal)</h4>
         <div class="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <p class="m-0 text-sm font-semibold text-gray-800">PHP Web Developer</p>
           <p class="m-0 text-sm italic text-gray-600">01/2007 - 05/2008 • Aveiro, Portugal</p>
@@ -143,14 +149,14 @@
     </section>
 
     <section class="mb-8">
-      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-brand">Education</h3>
+      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-ink">Education</h3>
       <p class="m-0 text-sm font-semibold text-gray-800">Computer and Telematics Engineering, Networks and Computer Science</p>
       <p class="m-0 text-sm text-gray-700">Universidade de Aveiro</p>
       <p class="m-0 text-sm text-gray-700">07/2007</p>
     </section>
 
     <section class="mb-8">
-      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-brand">Professional Development</h3>
+      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-ink">Professional Development</h3>
       <ul class="m-0 list-disc space-y-1 pl-6 text-sm text-gray-700">
         <li>Ethical Hacking with JavaScript</li>
         <li>ITIL Foundations v3 Certification</li>
@@ -158,7 +164,7 @@
     </section>
 
     <section class="mb-8">
-      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-brand">Publications</h3>
+      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-ink">Publications</h3>
       <p class="mb-1 text-sm font-semibold text-gray-800">Clinical Information Management System for Hemophilia: Implementation of a Vertical Prototype</p>
       <p class="mb-2 text-sm text-gray-700">06/2008</p>
       <p class="mb-1 text-sm text-gray-700">REVISTA DO DETUA, VOL. 4, Nº 9,</p>
@@ -166,7 +172,7 @@
     </section>
 
     <section class="mb-8">
-      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-brand">Skills</h3>
+      <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-bold uppercase tracking-wide text-ink">Skills</h3>
       <div class="space-y-3 text-sm text-gray-700">
         <p class="m-0"><strong>Architecture & Delivery:</strong> AI-assisted Workflows, CI/CD, Data Pipelines, Distributed computing, Domain-Driven Design (DDD), Extreme Programming (XP), Full-stack Architectures, Majestic monoliths, Micro-frontends, PWAs, SPAs</p>
         <p class="m-0"><strong>Leadership & Strategy:</strong> Acquisition and mergers, Agile/Kanban/Scrum, Change Management, Engineering Management, Engineering Mentorship, Goal Setting, Hiring, Product Strategy</p>

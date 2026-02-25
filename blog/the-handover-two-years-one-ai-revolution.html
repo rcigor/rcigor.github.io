@@ -4,30 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Handing Over the Keys. - Igor Carreira</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: '#194D33',
-            'brand-dark': '#0f2c1b'
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif']
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
           }
         }
       }
     };
   </script>
 </head>
-<body class="m-0 bg-white px-4 py-8 font-sans text-brand sm:px-8">
-  <div class="mx-auto w-full max-w-[800px] text-left">
+<body class="m-0 min-h-screen bg-stone px-4 py-8 font-sans text-ink antialiased sm:px-8">
+  <div class="mx-auto w-full max-w-[920px] rounded-xl border border-[#d2d2d2] bg-white px-6 py-8 text-left shadow-[0_10px_24px_rgba(0,0,0,0.08)] sm:px-8">
     <header class="mb-10">
       <h1 class="mb-3 text-4xl font-bold sm:text-5xl">Handing Over the Keys.</h1>
       <div class="mb-8 flex flex-wrap items-center justify-between gap-3 text-[#444]">
-        <a href="../index.html" class="inline-flex items-center gap-2 text-inherit no-underline"><img src="../back-arrow.svg" alt="Back" width="20" height="20" class="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back</a>
+        <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#4b5563] no-underline transition hover:text-ink">&larr; Back</a>
         <p class="m-0 text-sm">Wed 18th Feb 2026</p>
       </div>
     </header>
@@ -39,35 +45,35 @@
 
       <p class="m-0">This project was the first time I truly let AI into the "inner circle" of my workflow, thanks in large part to Ben’s encouragement to stay open-minded and embrace continuous learning. And it's become more than a tool; it became the weirdest, most brilliant, and occasionally most infuriating team member I've ever had.</p>
 
-      <h2 class="m-0 pt-4 text-2xl font-bold text-brand">The Era of "Internal Cursing" (Early 2024)</h2>
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">The Era of "Internal Cursing" (Early 2024)</h2>
 
       <p class="m-0">In the beginning, it was rough. I was trying to hold onto the old ways while the AI was still in its "dim-witted assistant" phase. The early 2024 models were a constant source of friction. My project partner, Orest, had to endure my legendary (and frequent) rants. I'd yell at the screen as the AI hallucinated a React hook or produced Jest tests so brittle they'd break if you looked at them sideways.</p>
 
       <p class="m-0">There were many moments where I'd get fed up, kill Agent Mode in a fit of pique, and mutter: "Fine, I'll just do it myself." I'd go back to raw typing just to feel like a "real" developer again.</p>
 
-      <h2 class="m-0 pt-4 text-2xl font-bold text-brand">The First Crack in the Wall (Mid-2024)</h2>
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">The First Crack in the Wall (Mid-2024)</h2>
 
       <p class="m-0">The first real shift happened in mid-2024. When Claude 3.5 Sonnet hit the scene, something clicked. For the first time, the AI actually understood React hooks and complex logic without me having to hold its hand through every line. I was still rewriting a lot, but for the first time, I wasn't starting from scratch every time. The partnership was starting to feel less one-sided.</p>
 
-      <h2 class="m-0 pt-4 text-2xl font-bold text-brand">From "Typing" to "Orchestrating" (2025)</h2>
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">From "Typing" to "Orchestrating" (2025)</h2>
 
       <p class="m-0">Then came 2025, the year the world changed for us. As models launched with massive context windows and real reasoning capabilities, Agent Mode stopped being a gimmick and became a legitimate partner.</p>
 
       <p class="m-0">By late 2025, I found myself telling people something I never thought I'd say: I hadn't written a manual line of code in weeks. My job had fundamentally transformed. I wasn't a "coder" anymore; I was an orchestrator.</p>
 
-      <h2 class="m-0 pt-4 text-2xl font-bold text-brand">The Test Suite: AI Labor, XP Intentionality</h2>
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">The Test Suite: AI Labor, XP Intentionality</h2>
 
       <p class="m-0">One of the most satisfying parts of this evolution was in testing. Early on, AI-written Jest tests sucked ar** - they were lazy and missed the point. But as the models evolved, something magical happened.</p>
 
       <p class="m-0">In the last 2/3 quarters, I started realising the AI wasn't just "writing tests"; it was executing my XP intentionality. I was still the one devising the test strategy, defining the boundary conditions, and designing the edge cases. But instead of me spending hours fighting with mocks and syntax, the agent became better at producing test code - eventually taking higher-level, test-first prompts and evolving test suites with a level correctness and of edge-case awareness that felt right. The intent was mine; the labor was the machine's.</p>
 
-      <h2 class="m-0 pt-4 text-2xl font-bold text-brand">To My Project Partner, Orest</h2>
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">To My Project Partner, Orest</h2>
 
       <p class="m-0">Through all of this - the rants, the sudden shifts in workflow, and the 2024 model-induced meltdowns - there was Orest.</p>
 
       <p class="m-0">Orest has been my project partner and the rock of this journey. He's the one who endured my XP-purist lectures and then watched me slowly transition into an AI-orchestrator. Navigating the "remote-XP" world is tough, but having a partner who can roll with the punches (and the cursing) made this project what it is. Cheers for sticking it out with me, man.</p>
 
-      <h2 class="m-0 pt-4 text-2xl font-bold text-brand">The Next Step</h2>
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">The Next Step</h2>
 
       <p class="m-0">Today I hand over this project where AI isn't an assistant; it's the primary engine, and I'm "simply" the Architect.</p>
 

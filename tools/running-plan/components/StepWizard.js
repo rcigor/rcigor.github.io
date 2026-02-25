@@ -43,8 +43,8 @@ const StepWizard = function StepWizard({
         />
       ) : (
         <section className="mb-8 rounded-lg border border-gray-200 p-5">
-          <h2 className="mb-3 text-lg font-bold text-brand">Step 1: Event date</h2>
-          <label htmlFor="eventDate" className="mb-2 block text-sm font-semibold text-brand">
+          <h2 className="mb-3 text-lg font-bold text-ink">Step 1: Event date</h2>
+          <label htmlFor="eventDate" className="mb-2 block text-sm font-semibold text-ink">
             When is your running event?
           </label>
           <input
@@ -68,8 +68,8 @@ const StepWizard = function StepWizard({
       ) : (
         currentStep >= 2 && (
           <section className="mb-8 rounded-lg border border-gray-200 p-5">
-            <h2 className="mb-3 text-lg font-bold text-brand">Step 2: Distance</h2>
-            <label htmlFor="distance" className="mb-2 block text-sm font-semibold text-brand">
+            <h2 className="mb-3 text-lg font-bold text-ink">Step 2: Distance</h2>
+            <label htmlFor="distance" className="mb-2 block text-sm font-semibold text-ink">
               Choose your distance
             </label>
             <select
@@ -107,8 +107,8 @@ const StepWizard = function StepWizard({
       ) : (
         currentStep >= 3 && (
           <section className="mb-8 rounded-lg border border-gray-200 p-5">
-            <h2 className="mb-3 text-lg font-bold text-brand">Step 3: Target time</h2>
-            <label htmlFor="expectedTime" className="mb-2 block text-sm font-semibold text-brand">
+            <h2 className="mb-3 text-lg font-bold text-ink">Step 3: Target time</h2>
+            <label htmlFor="expectedTime" className="mb-2 block text-sm font-semibold text-ink">
               Expected finish time (hours:minutes)
             </label>
             <input
@@ -132,8 +132,8 @@ const StepWizard = function StepWizard({
       ) : (
         currentStep >= 4 && (
           <section className="mb-8 rounded-lg border border-gray-200 p-5">
-            <h2 className="mb-3 text-lg font-bold text-brand">Step 4: Weekly frequency</h2>
-            <label htmlFor="trainingDays" className="mb-2 block text-sm font-semibold text-brand">
+            <h2 className="mb-3 text-lg font-bold text-ink">Step 4: Weekly frequency</h2>
+            <label htmlFor="trainingDays" className="mb-2 block text-sm font-semibold text-ink">
               How many days per week will you train?
             </label>
             <select
@@ -157,7 +157,7 @@ const StepWizard = function StepWizard({
           type="button"
           onClick={onGenerate}
           disabled={!canGenerate}
-          className="w-full rounded-lg bg-brand px-8 py-4 text-base font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-400"
+          className="w-full rounded-lg bg-brand px-8 py-4 text-base font-semibold text-ink transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-400"
         >
           Generate Training Plan
         </button>

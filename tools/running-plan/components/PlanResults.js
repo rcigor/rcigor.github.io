@@ -77,7 +77,7 @@ const PlanResults = function PlanResults({
 
   const renderReadOnlySession = (session) => (
     <>
-      <div className="mb-1 text-sm font-semibold text-brand">
+      <div className="mb-1 text-sm font-semibold text-ink">
         {session.day}
         {session.dateLabel ? ` - ${session.dateLabel}` : ""}
       </div>
@@ -103,7 +103,7 @@ const PlanResults = function PlanResults({
   return (
     <section className="mt-10 pb-24">
       <div className="mb-6 print:hidden">
-        <label htmlFor="planName" className="mb-2 block text-sm font-semibold text-brand">
+        <label htmlFor="planName" className="mb-2 block text-sm font-semibold text-ink">
           Plan name
         </label>
         <input
@@ -143,7 +143,7 @@ const PlanResults = function PlanResults({
       </div>
 
       <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 print:hidden">
-        <div className="mb-2 text-sm font-semibold text-brand">Share this plan</div>
+        <div className="mb-2 text-sm font-semibold text-ink">Share this plan</div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
             type="text"
@@ -155,14 +155,14 @@ const PlanResults = function PlanResults({
           <button
             type="button"
             onClick={onCopyShareUrl}
-            className="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark"
+            className="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-brand-dark"
           >
             {copyStatus === "copied" ? "Copied" : "Copy URL"}
           </button>
         </div>
       </div>
 
-      <h2 className="mb-1 text-3xl font-bold text-brand">
+      <h2 className="mb-1 text-3xl font-bold text-ink">
         {planName || `Your ${distanceLabel} Plan`}
       </h2>
       <p className="mb-6 text-[#666]">
@@ -179,7 +179,7 @@ const PlanResults = function PlanResults({
             key={weekIndex}
             className="mb-6 rounded-lg border border-gray-200 bg-white p-6 break-inside-avoid"
           >
-            <div className="mb-4 flex items-center gap-2 text-lg font-bold text-brand">
+            <div className="mb-4 flex items-center gap-2 text-lg font-bold text-ink">
               <span>Week {weekIndex + 1}</span>
               {hasTaperWeek && (
                 <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
@@ -201,7 +201,7 @@ const PlanResults = function PlanResults({
                         ? `rounded-md border-l-[3px] border-amber-500 bg-amber-50 p-4 ${
                             isSelected ? "ring-2 ring-amber-400" : ""
                           }`
-                        : `rounded-md border-l-[3px] border-brand bg-[#f9fdf7] p-4 ${
+                        : `rounded-md border-l-[3px] border-brand bg-[#fff8e3] p-4 ${
                             isSelected ? "ring-2 ring-brand" : ""
                           }`
                     }
@@ -230,7 +230,7 @@ const PlanResults = function PlanResults({
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl sm:rounded-2xl sm:p-6">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-xl font-bold text-brand">Edit training day</h3>
+                <h3 className="text-xl font-bold text-ink">Edit training day</h3>
                 <p className="m-0 text-sm text-gray-600">
                   {activeEditor.label} ({activeEditorIndex + 1} of {editableSessions.length})
                 </p>
@@ -268,7 +268,7 @@ const PlanResults = function PlanResults({
                 <div>
                   <label
                     htmlFor="editor-day"
-                    className="mb-1 block text-sm font-semibold text-brand"
+                    className="mb-1 block text-sm font-semibold text-ink"
                   >
                     Day
                   </label>
@@ -289,7 +289,7 @@ const PlanResults = function PlanResults({
                 <div>
                   <label
                     htmlFor="editor-date"
-                    className="mb-1 block text-sm font-semibold text-brand"
+                    className="mb-1 block text-sm font-semibold text-ink"
                   >
                     Date
                   </label>
@@ -311,7 +311,7 @@ const PlanResults = function PlanResults({
               <div>
                 <label
                   htmlFor="editor-session-type"
-                  className="mb-1 block text-sm font-semibold text-brand"
+                  className="mb-1 block text-sm font-semibold text-ink"
                 >
                   Session type
                 </label>
@@ -332,7 +332,7 @@ const PlanResults = function PlanResults({
               <div>
                 <label
                   htmlFor="editor-duration"
-                  className="mb-1 block text-sm font-semibold text-brand"
+                  className="mb-1 block text-sm font-semibold text-ink"
                 >
                   Duration (minutes)
                 </label>
@@ -353,7 +353,7 @@ const PlanResults = function PlanResults({
               <div>
                 <label
                   htmlFor="editor-description"
-                  className="mb-1 block text-sm font-semibold text-brand"
+                  className="mb-1 block text-sm font-semibold text-ink"
                 >
                   Description / notes
                 </label>
@@ -374,7 +374,7 @@ const PlanResults = function PlanResults({
               <div>
                 <label
                   htmlFor="editor-exercises"
-                  className="mb-1 block text-sm font-semibold text-brand"
+                  className="mb-1 block text-sm font-semibold text-ink"
                 >
                   Exercises (comma-separated)
                 </label>
@@ -412,7 +412,7 @@ const PlanResults = function PlanResults({
 
       <button
         type="button"
-        className="mt-4 w-full rounded-lg bg-brand px-8 py-4 text-base font-semibold text-white transition hover:bg-brand-dark print:hidden"
+        className="mt-4 w-full rounded-lg bg-brand px-8 py-4 text-base font-semibold text-ink transition hover:bg-brand-dark print:hidden"
         onClick={onStartOver}
       >
         Start Over

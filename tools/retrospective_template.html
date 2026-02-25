@@ -4,29 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team Retrospective</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: '#194D33',
-            'brand-dark': '#0f2c1b'
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif']
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
           }
         }
       }
     };
   </script>
 </head>
-<body class="m-0 block bg-white px-4 py-8 font-sans text-brand sm:px-8">
-  <div class="mx-auto w-full max-w-[900px] text-left leading-relaxed">
+<body class="m-0 block bg-stone px-4 py-8 font-sans text-ink antialiased sm:px-8">
+  <div class="mx-auto w-full max-w-[980px] rounded-xl border border-[#d2d2d2] bg-white px-6 py-8 text-left leading-relaxed shadow-[0_10px_24px_rgba(0,0,0,0.08)] sm:px-8">
     <header class="mb-8">
       <h1 class="mb-2 text-5xl font-bold">Team Retrospective</h1>
-      <p class="mb-8 text-[1.2em] text-[#444]"><a href="../index.html" class="inline-flex items-center gap-2 no-underline text-inherit"><img src="../back-arrow.svg" alt="Back" width="20" height="20" class="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]" /> Back</a></p>
+      <p class="mb-8 text-[1.2em] text-[#444]"><a href="../index.html" class="inline-flex items-center gap-2 text-sm font-semibold no-underline text-[#4b5563] transition hover:text-ink">&larr; Back</a></p>
     </header>
 
     <div class="mb-4 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)]">
@@ -37,8 +43,8 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="32" cy="32" r="30" stroke="#194D33" stroke-width="4" />
-        <path d="M32 18v14l10 6" stroke="#194D33" stroke-width="4" stroke-linecap="round" />
+        <circle cx="32" cy="32" r="30" stroke="#2B2B2B" stroke-width="4" />
+        <path d="M32 18v14l10 6" stroke="#2B2B2B" stroke-width="4" stroke-linecap="round" />
       </svg>
       <div>
         <h2 class="mb-2 text-2xl">Step 0 - Why We’re Here</h2>
@@ -51,14 +57,14 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 56C32 56 8 44 8 26C8 18 14 12 22 12C27 12 30 15 32 18C34 15 37 12 42 12C50 12 56 18 56 26C56 44 32 56 32 56Z" stroke="#194D33" stroke-width="3" />
+        <path d="M32 56C32 56 8 44 8 26C8 18 14 12 22 12C27 12 30 15 32 18C34 15 37 12 42 12C50 12 56 18 56 26C56 44 32 56 32 56Z" stroke="#2B2B2B" stroke-width="3" />
       </svg>
       <div>
         <h2 class="mb-2 text-2xl">Step 1 - Be Kind</h2>
         <p>
           Be kind, respectful, and empathetic - to one another and to yourself 🙂. Everyone here did the best job they could with the information, skills, and constraints they had at the time.
         </p>
-        <blockquote class="mt-4 rounded-lg border-l-4 border-brand bg-[#f9fdf7] p-4 italic text-gray-700">
+        <blockquote class="mt-4 rounded-lg border-l-4 border-brand bg-[#fff8e3] p-4 italic text-gray-700">
           <strong>The Prime Directive (Norm Kerth)</strong><br />
           “Regardless of what we discover, we understand and truly believe that everyone did the best job they could, given what they knew at the time, their skills and abilities, the resources available, and the situation at hand.”
         </blockquote>
@@ -67,8 +73,8 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="8" y="10" width="48" height="44" rx="6" stroke="#194D33" stroke-width="3" />
-        <line x1="8" y1="24" x2="56" y2="24" stroke="#194D33" stroke-width="3" />
+        <rect x="8" y="10" width="48" height="44" rx="6" stroke="#2B2B2B" stroke-width="3" />
+        <line x1="8" y1="24" x2="56" y2="24" stroke="#2B2B2B" stroke-width="3" />
       </svg>
       <div>
         <h2 class="mb-2 text-2xl">Step 2 - Add Reflections</h2>
@@ -80,8 +86,8 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="10" y="10" width="20" height="20" rx="4" stroke="#194D33" stroke-width="3" />
-        <rect x="34" y="34" width="20" height="20" rx="4" stroke="#194D33" stroke-width="3" />
+        <rect x="10" y="10" width="20" height="20" rx="4" stroke="#2B2B2B" stroke-width="3" />
+        <rect x="34" y="34" width="20" height="20" rx="4" stroke="#2B2B2B" stroke-width="3" />
       </svg>
       <div>
         <h2 class="mb-2 text-2xl">Step 3 - Group & De‑duplicate</h2>
@@ -93,7 +99,7 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 34l12 12 28-28" stroke="#194D33" stroke-width="4" stroke-linecap="round" />
+        <path d="M12 34l12 12 28-28" stroke="#2B2B2B" stroke-width="4" stroke-linecap="round" />
       </svg>
       <div>
         <h2 class="mb-2 text-2xl">Step 4 - Vote</h2>
@@ -105,8 +111,8 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="32" cy="32" r="22" stroke="#194D33" stroke-width="3" />
-        <path d="M32 20v14l8 6" stroke="#194D33" stroke-width="3" stroke-linecap="round" />
+        <circle cx="32" cy="32" r="22" stroke="#2B2B2B" stroke-width="3" />
+        <path d="M32 20v14l8 6" stroke="#2B2B2B" stroke-width="3" stroke-linecap="round" />
       </svg>
       <div>
         <h2 class="mb-2 text-2xl">Step 5 - Discuss Top Items</h2>
@@ -118,9 +124,9 @@
 
     <section class="mb-4 grid items-start gap-6 rounded-xl border border-gray-200 bg-white px-6 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.05)] sm:grid-cols-[64px_1fr]">
       <svg class="h-16 w-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14 10h36v44H14z" stroke="#194D33" stroke-width="3" />
-        <line x1="20" y1="22" x2="44" y2="22" stroke="#194D33" stroke-width="3" />
-        <line x1="20" y1="32" x2="44" y2="32" stroke="#194D33" stroke-width="3" />
+        <path d="M14 10h36v44H14z" stroke="#2B2B2B" stroke-width="3" />
+        <line x1="20" y1="22" x2="44" y2="22" stroke="#2B2B2B" stroke-width="3" />
+        <line x1="20" y1="32" x2="44" y2="32" stroke="#2B2B2B" stroke-width="3" />
       </svg>
       <div class="min-w-0">
         <h2 class="mb-2 text-2xl">Step 6 - Capture Learnings & Actions</h2>
@@ -133,10 +139,10 @@
           <table class="w-full min-w-[560px] border-collapse">
             <thead>
               <tr>
-                <th class="border border-gray-200 bg-[#f9fdf7] px-2 py-2 text-left text-sm font-semibold text-brand sm:px-3 sm:py-3">Action</th>
-                <th class="border border-gray-200 bg-[#f9fdf7] px-2 py-2 text-left text-sm font-semibold text-brand sm:px-3 sm:py-3">Owner</th>
-                <th class="border border-gray-200 bg-[#f9fdf7] px-2 py-2 text-left text-sm font-semibold text-brand sm:px-3 sm:py-3">Due Date</th>
-                <th class="border border-gray-200 bg-[#f9fdf7] px-2 py-2 text-left text-sm font-semibold text-brand sm:px-3 sm:py-3">Tracking / Follow‑up</th>
+                <th class="border border-gray-200 bg-[#fff8e3] px-2 py-2 text-left text-sm font-semibold text-ink sm:px-3 sm:py-3">Action</th>
+                <th class="border border-gray-200 bg-[#fff8e3] px-2 py-2 text-left text-sm font-semibold text-ink sm:px-3 sm:py-3">Owner</th>
+                <th class="border border-gray-200 bg-[#fff8e3] px-2 py-2 text-left text-sm font-semibold text-ink sm:px-3 sm:py-3">Due Date</th>
+                <th class="border border-gray-200 bg-[#fff8e3] px-2 py-2 text-left text-sm font-semibold text-ink sm:px-3 sm:py-3">Tracking / Follow‑up</th>
               </tr>
             </thead>
             <tbody>

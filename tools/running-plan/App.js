@@ -282,17 +282,17 @@ function MarathonPrepBuilderApp() {
           alt="Back"
           width="20"
           height="20"
-          className="[filter:invert(26%)_sepia(48%)_saturate(603%)_hue-rotate(122deg)_brightness(97%)_contrast(101%)]"
+          className="opacity-70"
         />{" "}
         Back
       </a>
 
-      <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
+      <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
         {window.RunningPlan.RISK_ACCEPTED_BANNER}
       </div>
 
       <header className="mb-8">
-        <h1 className="mb-2 text-5xl font-bold text-brand">Event-Day Run Planner</h1>
+        <h1 className="mb-2 text-5xl font-bold text-ink">Event-Day Run Planner</h1>
         <p className="m-0 text-[1.2em] text-[#444]">Plan your running event</p>
       </header>
 

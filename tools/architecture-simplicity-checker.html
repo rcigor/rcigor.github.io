@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Architecture Healther Checker</title>
+  <title>Architecture Checker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
   <header class="w-full border-b-4 border-brand bg-ink text-white">
     <div class="px-6 py-8 sm:px-10 lg:px-16">
       <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
-      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Architecture Healther Checker</h1>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Architecture Checker</h1>
       <p class="mt-2"><span class="inline-flex rounded-full border border-[#8a6412] bg-gradient-to-r from-[#ffe59c] via-[#ffd86a] to-[#f3bd2d] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#3b2a04] shadow-[0_8px_20px_rgba(195,150,35,0.45)] ring-1 ring-white/70">Prototype</span></p>
       <p class="mt-3 max-w-3xl text-[#d1d5db]">Quickly score architectural health, identify complexity hotspots, and generate focused, DDD-friendly improvement actions.</p>
     </div>
@@ -297,7 +297,7 @@
         : '<li>No deferred actions identified yet.</li>';
 
       const topFocus = topNow[0] || actionList[0] || 'Maintain current simplification momentum.';
-      const summary = `Architecture Healther Checker score: ${finalScore.toFixed(1)}/5 (${bandText}). Current shape: ${shape.replace('-', ' ')}. Top focus: ${topFocus}${pain ? ` Reported pain: ${pain}.` : ''}`;
+      const summary = `Architecture Checker score: ${finalScore.toFixed(1)}/5 (${bandText}). Current shape: ${shape.replace('-', ' ')}. Top focus: ${topFocus}${pain ? ` Reported pain: ${pain}.` : ''}`;
       summaryEl.textContent = summary;
       copyBtn.dataset.summary = summary;
     }

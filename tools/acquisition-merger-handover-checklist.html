@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acquisition & Merger Handover Checklist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
+          },
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Acquisition &amp; Merger Handover Checklist</h1>
+      <p class="mt-3 max-w-3xl text-[#d1d5db]">Capture critical assets, transfer ownership, and protect delivery continuity during the first 90 days.</p>
+      <div class="mt-5 flex flex-wrap items-center gap-3">
+        <button id="exportBtn" type="button" class="rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-brand-dark">Export to Markdown</button>
+        <label for="importFileInput" class="cursor-pointer rounded-md border border-[#e5e7eb] bg-transparent px-4 py-2.5 text-sm font-semibold text-[#f3f4f6] transition hover:border-brand hover:text-brand">Import Markdown</label>
+        <input id="importFileInput" type="file" accept=".md,text/markdown,text/plain" class="sr-only">
+      </div>
+      <p id="exportHint" class="mt-2 text-xs text-[#d1d5db]"></p>
+      <p id="actionMsg" class="mt-2 text-xs text-[#d1d5db]"></p>
+    </div>
+  </header>
+
+  <main class="w-full bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+    <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+      <h2 class="font-display text-2xl font-bold">Handover Context</h2>
+      <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <label class="text-sm font-semibold text-[#374151]">
+          Program Name
+          <input id="programName" type="text" placeholder="e.g., Atlas + Northwind Integration" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+        </label>
+        <label class="text-sm font-semibold text-[#374151]">
+          Legacy Team
+          <input id="legacyTeam" type="text" placeholder="Team being handed over" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+        </label>
+        <label class="text-sm font-semibold text-[#374151]">
+          Receiving Team
+          <input id="receivingTeam" type="text" placeholder="Team taking ownership" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+        </label>
+        <label class="text-sm font-semibold text-[#374151]">
+          Handover Lead
+          <input id="handoverLead" type="text" placeholder="Primary accountable owner" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+        </label>
+        <label class="text-sm font-semibold text-[#374151]">
+          Handover Date
+          <input id="handoverDate" type="date" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+        </label>
+        <label class="text-sm font-semibold text-[#374151]">
+          Status
+          <select id="programStatus" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+            <option>Planning</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+            <option>Blocked</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <div class="mt-6 grid grid-cols-1 gap-6">
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display text-2xl font-bold">Systems Inventory</h2>
+          <button data-add-row="systemsInventory" type="button" class="rounded-md border border-[#2b2b2b] bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:bg-[#f8f8f8]">Add row</button>
+        </div>
+        <p class="mt-2 text-sm text-[#4b5563]">List applications, data stores, integrations, and tools involved in business-critical operations.</p>
+        <div class="mt-4 w-full overflow-x-auto">
+          <table class="w-full min-w-[960px] border-collapse">
+            <thead>
+              <tr>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">System</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Business Purpose</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Criticality</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Access / Repo / URL</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="systemsInventoryBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display text-2xl font-bold">Ownership Transfer</h2>
+          <button data-add-row="ownershipTransfer" type="button" class="rounded-md border border-[#2b2b2b] bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:bg-[#f8f8f8]">Add row</button>
+        </div>
+        <p class="mt-2 text-sm text-[#4b5563]">Track explicit movement of accountability from legacy owners to new owners.</p>
+        <div class="mt-4 w-full overflow-x-auto">
+          <table class="w-full min-w-[920px] border-collapse">
+            <thead>
+              <tr>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Asset / Domain</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Current Owner</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">New Owner</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Transfer Date</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody id="ownershipTransferBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display text-2xl font-bold">Risk Register</h2>
+          <button data-add-row="riskRegister" type="button" class="rounded-md border border-[#2b2b2b] bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:bg-[#f8f8f8]">Add row</button>
+        </div>
+        <p class="mt-2 text-sm text-[#4b5563]">Make key transition risks visible with owner and mitigation.</p>
+        <div class="mt-4 w-full overflow-x-auto">
+          <table class="w-full min-w-[980px] border-collapse">
+            <thead>
+              <tr>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Risk</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Likelihood</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Impact</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Mitigation</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Risk Owner</th>
+              </tr>
+            </thead>
+            <tbody id="riskRegisterBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display text-2xl font-bold">Dependency Map</h2>
+          <button data-add-row="dependencyMap" type="button" class="rounded-md border border-[#2b2b2b] bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:bg-[#f8f8f8]">Add row</button>
+        </div>
+        <p class="mt-2 text-sm text-[#4b5563]">Identify upstream, downstream, and external dependencies that can block handover.</p>
+        <div class="mt-4 w-full overflow-x-auto">
+          <table class="w-full min-w-[980px] border-collapse">
+            <thead>
+              <tr>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Dependency</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Type</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Owner / Contact</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Failure Impact</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Fallback / Notes</th>
+              </tr>
+            </thead>
+            <tbody id="dependencyMapBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <h2 class="font-display text-2xl font-bold">Continuity Plan</h2>
+        <p class="mt-2 text-sm text-[#4b5563]">Define how service and delivery continuity is protected during ownership transition.</p>
+        <div class="mt-5 grid grid-cols-1 gap-4">
+          <label class="text-sm font-semibold text-[#374151]">
+            First 72-hour priorities
+            <textarea id="continuityPriorities" rows="3" placeholder="Critical controls, staffing, and communication sequence." class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm"></textarea>
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Operations continuity steps
+            <textarea id="continuityOperations" rows="3" placeholder="Backups, runbooks, credential handover, and maintenance windows." class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm"></textarea>
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Incident escalation and communication
+            <textarea id="continuityIncident" rows="3" placeholder="Primary contacts, escalation path, internal/external communication." class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm"></textarea>
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Service health monitoring and SLO guardrails
+            <textarea id="continuityMonitoring" rows="3" placeholder="Dashboards, alert thresholds, and daily review rhythm." class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-display text-2xl font-bold">30/60/90-Day Handover Actions</h2>
+          <button data-add-row="handoverActions" type="button" class="rounded-md border border-[#2b2b2b] bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:bg-[#f8f8f8]">Add row</button>
+        </div>
+        <p class="mt-2 text-sm text-[#4b5563]">Track concrete actions and success criteria by phase.</p>
+        <div class="mt-4 w-full overflow-x-auto">
+          <table class="w-full min-w-[1080px] border-collapse">
+            <thead>
+              <tr>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Window</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Action</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Owner</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Due Date</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Success Criteria</th>
+                <th class="border border-[#d2d2d2] bg-[#fff8e3] px-3 py-3 text-left text-sm font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody id="handoverActionsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Capture facts early, assign explicit owners, and update this checklist weekly through day 90.</p>
+  </footer>
+
+  <template id="systemsInventoryRowTemplate">
+    <tr>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="System name"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="What it enables"></td>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="URL, repo, vault path"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Constraints or caveats"></td>
+    </tr>
+  </template>
+
+  <template id="ownershipTransferRowTemplate">
+    <tr>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Service, domain, or process"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Current owner"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="New owner"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="date" class="w-full rounded border border-[#d2d2d2] p-2 text-sm"></td>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>Planned</option>
+          <option>In Progress</option>
+          <option>Transferred</option>
+          <option>Blocked</option>
+        </select>
+      </td>
+    </tr>
+  </template>
+
+  <template id="riskRegisterRowTemplate">
+    <tr>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Risk statement"></td>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </td>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Control or mitigation plan"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Owner"></td>
+    </tr>
+  </template>
+
+  <template id="dependencyMapRowTemplate">
+    <tr>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Dependency name"></td>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>Upstream</option>
+          <option>Downstream</option>
+          <option>External Vendor</option>
+          <option>Internal Shared Service</option>
+        </select>
+      </td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Team or contact"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="What fails if this is unavailable"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Fallback, SLA, key note"></td>
+    </tr>
+  </template>
+
+  <template id="handoverActionsRowTemplate">
+    <tr>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>Day 0-30</option>
+          <option>Day 31-60</option>
+          <option>Day 61-90</option>
+        </select>
+      </td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Concrete handover action"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Owner"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="date" class="w-full rounded border border-[#d2d2d2] p-2 text-sm"></td>
+      <td class="border border-[#d2d2d2] p-2"><input type="text" class="w-full rounded border border-[#d2d2d2] p-2 text-sm" placeholder="Definition of done"></td>
+      <td class="border border-[#d2d2d2] p-2">
+        <select class="w-full rounded border border-[#d2d2d2] p-2 text-sm">
+          <option>Not Started</option>
+          <option>In Progress</option>
+          <option>Done</option>
+          <option>Blocked</option>
+        </select>
+      </td>
+    </tr>
+  </template>
+
+  <script>
+    const TABLE_CONFIG = {
+      systemsInventory: {
+        bodyId: 'systemsInventoryBody',
+        templateId: 'systemsInventoryRowTemplate',
+        title: 'Systems Inventory',
+        headers: ['System', 'Business Purpose', 'Criticality', 'Access / Repo / URL', 'Notes']
+      },
+      ownershipTransfer: {
+        bodyId: 'ownershipTransferBody',
+        templateId: 'ownershipTransferRowTemplate',
+        title: 'Ownership Transfer',
+        headers: ['Asset / Domain', 'Current Owner', 'New Owner', 'Transfer Date', 'Status']
+      },
+      riskRegister: {
+        bodyId: 'riskRegisterBody',
+        templateId: 'riskRegisterRowTemplate',
+        title: 'Risk Register',
+        headers: ['Risk', 'Likelihood', 'Impact', 'Mitigation', 'Risk Owner']
+      },
+      dependencyMap: {
+        bodyId: 'dependencyMapBody',
+        templateId: 'dependencyMapRowTemplate',
+        title: 'Dependency Map',
+        headers: ['Dependency', 'Type', 'Owner / Contact', 'Failure Impact', 'Fallback / Notes']
+      },
+      handoverActions: {
+        bodyId: 'handoverActionsBody',
+        templateId: 'handoverActionsRowTemplate',
+        title: '30/60/90-Day Handover Actions',
+        headers: ['Window', 'Action', 'Owner', 'Due Date', 'Success Criteria', 'Status']
+      }
+    };
+
+    const MIN_FILLED_SECTIONS = 3;
+    const TABLE_KEYS = Object.keys(TABLE_CONFIG);
+
+    function addRow(tableKey) {
+      const config = TABLE_CONFIG[tableKey];
+      if (!config) return;
+      const body = document.getElementById(config.bodyId);
+      const template = document.getElementById(config.templateId);
+      if (!body || !template) return;
+      body.appendChild(template.content.cloneNode(true));
+    }
+
+    function clearTable(tableKey) {
+      const config = TABLE_CONFIG[tableKey];
+      if (!config) return;
+      const body = document.getElementById(config.bodyId);
+      if (!body) return;
+      body.innerHTML = '';
+    }
+
+    function normalizedToken(value) {
+      return (value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function setSelectByText(selectEl, targetText) {
+      if (!selectEl || !targetText) return;
+      const target = normalizedToken(targetText);
+      const option = Array.from(selectEl.options).find((item) => normalizedToken(item.text) === target);
+      if (option) {
+        selectEl.value = option.value;
+      }
+    }
+
+    function setFieldValue(field, value) {
+      const normalized = value === '_Not filled_' ? '' : value;
+      if (field.tagName === 'SELECT') {
+        setSelectByText(field, normalized);
+        return;
+      }
+      field.value = normalized;
+    }
+
+    function setMessage(message, isError = false) {
+      const msg = document.getElementById('actionMsg');
+      if (!msg) return;
+      msg.textContent = message;
+      msg.className = `mt-2 text-xs ${isError ? 'text-[#ffd8d8]' : 'text-[#d1d5db]'}`;
+      setTimeout(() => {
+        msg.textContent = '';
+        msg.className = 'mt-2 text-xs text-[#d1d5db]';
+      }, 2400);
+    }
+
+    function isNonEmptyValue(value) {
+      const trimmed = (value || '').trim();
+      return trimmed !== '' && trimmed !== '_Not filled_';
+    }
+
+    function isContextSectionFilled() {
+      const fields = ['programName', 'legacyTeam', 'receivingTeam', 'handoverLead', 'handoverDate'];
+      return fields.some((id) => isNonEmptyValue(document.getElementById(id).value));
+    }
+
+    function isContinuityPlanFilled() {
+      const fields = ['continuityPriorities', 'continuityOperations', 'continuityIncident', 'continuityMonitoring'];
+      return fields.some((id) => isNonEmptyValue(document.getElementById(id).value));
+    }
+
+    function isTableSectionFilled(tableKey) {
+      const config = TABLE_CONFIG[tableKey];
+      const body = document.getElementById(config.bodyId);
+      const rows = body ? Array.from(body.querySelectorAll('tr')) : [];
+
+      return rows.some((row) => {
+        const textOrDateFields = Array.from(row.querySelectorAll('input[type="text"], input[type="date"], textarea'));
+        const hasTextOrDate = textOrDateFields.some((field) => isNonEmptyValue(field.value));
+        if (hasTextOrDate) return true;
+
+        const selects = Array.from(row.querySelectorAll('select'));
+        return selects.some((select) => select.selectedIndex > 0);
+      });
+    }
+
+    function getFilledSectionsCount() {
+      const checks = [
+        isContextSectionFilled(),
+        isTableSectionFilled('systemsInventory'),
+        isTableSectionFilled('ownershipTransfer'),
+        isTableSectionFilled('riskRegister'),
+        isTableSectionFilled('dependencyMap'),
+        isContinuityPlanFilled(),
+        isTableSectionFilled('handoverActions')
+      ];
+      return checks.filter(Boolean).length;
+    }
+
+    function updateExportState() {
+      const exportBtn = document.getElementById('exportBtn');
+      const exportHint = document.getElementById('exportHint');
+      const filled = getFilledSectionsCount();
+      const isReady = filled >= MIN_FILLED_SECTIONS;
+
+      exportBtn.disabled = !isReady;
+      exportBtn.classList.toggle('opacity-50', !isReady);
+      exportBtn.classList.toggle('cursor-not-allowed', !isReady);
+      exportBtn.title = isReady ? 'Export checklist to markdown' : `Fill at least ${MIN_FILLED_SECTIONS} sections before exporting`;
+
+      exportHint.textContent = isReady
+        ? `Ready to export (${filled} sections filled).`
+        : `Fill at least ${MIN_FILLED_SECTIONS} sections before export (${filled}/${MIN_FILLED_SECTIONS} filled).`;
+      exportHint.className = `mt-2 text-xs ${isReady ? 'text-[#c9f2d0]' : 'text-[#d1d5db]'}`;
+    }
+
+    function fieldValue(el) {
+      if (!el) return '';
+      if (el.tagName === 'SELECT') {
+        const option = el.options[el.selectedIndex];
+        return option ? option.text.trim() : '';
+      }
+      return (el.value || '').trim();
+    }
+
+    function escapeMdCell(value) {
+      return value.replace(/\|/g, '\\|').replace(/\n+/g, ' ');
+    }
+
+    function tableToMarkdown(tableKey) {
+      const config = TABLE_CONFIG[tableKey];
+      const body = document.getElementById(config.bodyId);
+      const rows = [];
+
+      body.querySelectorAll('tr').forEach((row) => {
+        const cells = Array.from(row.querySelectorAll('input, select, textarea')).map((el) => escapeMdCell(fieldValue(el)));
+        const hasData = cells.some((cell) => cell !== '');
+        if (hasData) rows.push(cells);
+      });
+
+      let markdown = `## ${config.title}\n\n`;
+      markdown += `| ${config.headers.join(' | ')} |\n`;
+      markdown += `| ${config.headers.map(() => '---').join(' | ')} |\n`;
+
+      if (!rows.length) {
+        markdown += `| ${config.headers.map(() => '').join(' | ')} |\n\n`;
+        return markdown;
+      }
+
+      rows.forEach((cells) => {
+        markdown += `| ${cells.join(' | ')} |\n`;
+      });
+      markdown += '\n';
+      return markdown;
+    }
+
+    function normalizeParagraph(text) {
+      const trimmed = text.trim();
+      return trimmed ? trimmed : '_Not filled_';
+    }
+
+    function buildMarkdown() {
+      const date = new Date();
+      const today = date.toISOString().slice(0, 10);
+
+      const context = {
+        programName: document.getElementById('programName').value.trim(),
+        legacyTeam: document.getElementById('legacyTeam').value.trim(),
+        receivingTeam: document.getElementById('receivingTeam').value.trim(),
+        handoverLead: document.getElementById('handoverLead').value.trim(),
+        handoverDate: document.getElementById('handoverDate').value.trim(),
+        programStatus: fieldValue(document.getElementById('programStatus'))
+      };
+
+      const continuity = {
+        priorities: document.getElementById('continuityPriorities').value,
+        operations: document.getElementById('continuityOperations').value,
+        incident: document.getElementById('continuityIncident').value,
+        monitoring: document.getElementById('continuityMonitoring').value
+      };
+
+      let markdown = '# Acquisition & Merger Handover Checklist\n\n';
+      markdown += `Generated: ${today}\n\n`;
+      markdown += '## Handover Context\n\n';
+      markdown += `- Program Name: ${context.programName || '_Not filled_'}\n`;
+      markdown += `- Legacy Team: ${context.legacyTeam || '_Not filled_'}\n`;
+      markdown += `- Receiving Team: ${context.receivingTeam || '_Not filled_'}\n`;
+      markdown += `- Handover Lead: ${context.handoverLead || '_Not filled_'}\n`;
+      markdown += `- Handover Date: ${context.handoverDate || '_Not filled_'}\n`;
+      markdown += `- Status: ${context.programStatus || '_Not filled_'}\n\n`;
+
+      markdown += tableToMarkdown('systemsInventory');
+      markdown += tableToMarkdown('ownershipTransfer');
+      markdown += tableToMarkdown('riskRegister');
+      markdown += tableToMarkdown('dependencyMap');
+
+      markdown += '## Continuity Plan\n\n';
+      markdown += `### First 72-hour priorities\n${normalizeParagraph(continuity.priorities)}\n\n`;
+      markdown += `### Operations continuity steps\n${normalizeParagraph(continuity.operations)}\n\n`;
+      markdown += `### Incident escalation and communication\n${normalizeParagraph(continuity.incident)}\n\n`;
+      markdown += `### Service health monitoring and SLO guardrails\n${normalizeParagraph(continuity.monitoring)}\n\n`;
+
+      markdown += tableToMarkdown('handoverActions');
+      return { markdown, today, programName: context.programName };
+    }
+
+    function slugify(value) {
+      return value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60);
+    }
+
+    function parseMarkdownTableLine(line) {
+      let value = line.trim();
+      if (value.startsWith('|')) value = value.slice(1);
+      if (value.endsWith('|')) value = value.slice(0, -1);
+      const cells = [];
+      let current = '';
+
+      for (let i = 0; i < value.length; i += 1) {
+        const ch = value[i];
+        if (ch === '\\' && value[i + 1] === '|') {
+          current += '|';
+          i += 1;
+        } else if (ch === '|') {
+          cells.push(current.trim());
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+
+      cells.push(current.trim());
+      return cells;
+    }
+
+    function isSeparatorRow(cells) {
+      return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+    }
+
+    function extractSection(markdown, title) {
+      const lines = markdown.split('\n');
+      const expected = normalizedToken(title);
+      let start = -1;
+
+      for (let i = 0; i < lines.length; i += 1) {
+        const match = lines[i].match(/^##\s+(.+?)\s*$/);
+        if (match && normalizedToken(match[1]) === expected) {
+          start = i + 1;
+          break;
+        }
+      }
+
+      if (start === -1) return '';
+
+      let end = lines.length;
+      for (let i = start; i < lines.length; i += 1) {
+        if (/^##\s+/.test(lines[i].trim())) {
+          end = i;
+          break;
+        }
+      }
+
+      return lines.slice(start, end).join('\n').trim();
+    }
+
+    function escapeRegex(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function extractListValue(section, label) {
+      const match = section.match(new RegExp(`^- ${escapeRegex(label)}:\\s*(.*)$`, 'm'));
+      if (!match) return '';
+      const value = match[1].trim();
+      return value === '_Not filled_' ? '' : value;
+    }
+
+    function extractSubSection(section, title) {
+      const lines = section.split('\n');
+      const expected = normalizedToken(title);
+      let start = -1;
+
+      for (let i = 0; i < lines.length; i += 1) {
+        const match = lines[i].match(/^###\s+(.+?)\s*$/);
+        if (match && normalizedToken(match[1]) === expected) {
+          start = i + 1;
+          break;
+        }
+      }
+
+      if (start === -1) return '';
+
+      let end = lines.length;
+      for (let i = start; i < lines.length; i += 1) {
+        if (/^###\s+/.test(lines[i].trim())) {
+          end = i;
+          break;
+        }
+      }
+
+      const value = lines.slice(start, end).join('\n').trim();
+      return value === '_Not filled_' ? '' : value;
+    }
+
+    function parseSectionTableRows(section, expectedColumns) {
+      const lines = section
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith('|'));
+
+      if (lines.length < 2) return [];
+
+      const parsed = lines.map(parseMarkdownTableLine);
+      const rows = parsed.slice(1).filter((cells) => !isSeparatorRow(cells));
+
+      return rows
+        .map((cells) => {
+          const normalized = cells.map((cell) => (cell === '_Not filled_' ? '' : cell));
+          while (normalized.length < expectedColumns) normalized.push('');
+          return normalized.slice(0, expectedColumns);
+        })
+        .filter((cells) => cells.some((cell) => cell !== ''));
+    }
+
+    function populateTable(tableKey, rows) {
+      clearTable(tableKey);
+      if (!rows.length) {
+        addRow(tableKey);
+        return;
+      }
+
+      rows.forEach((rowValues) => {
+        addRow(tableKey);
+        const config = TABLE_CONFIG[tableKey];
+        const body = document.getElementById(config.bodyId);
+        const row = body.lastElementChild;
+        const fields = Array.from(row.querySelectorAll('input, select, textarea'));
+        fields.forEach((field, index) => {
+          setFieldValue(field, rowValues[index] || '');
+        });
+      });
+    }
+
+    function readFileAsText(file) {
+      if (file && typeof file.text === 'function') {
+        return file.text();
+      }
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+      });
+    }
+
+    function importMarkdown(markdownText) {
+      const normalizedMarkdown = markdownText.replace(/\r\n/g, '\n');
+      const looksLikeChecklist = /^#\s+.*handover checklist\s*$/im.test(normalizedMarkdown) || normalizedMarkdown.includes('## Handover Context');
+      if (!looksLikeChecklist) {
+        throw new Error('Unsupported markdown format');
+      }
+
+      const handoverContextSection = extractSection(normalizedMarkdown, 'Handover Context');
+      setFieldValue(document.getElementById('programName'), extractListValue(handoverContextSection, 'Program Name'));
+      setFieldValue(document.getElementById('legacyTeam'), extractListValue(handoverContextSection, 'Legacy Team'));
+      setFieldValue(document.getElementById('receivingTeam'), extractListValue(handoverContextSection, 'Receiving Team'));
+      setFieldValue(document.getElementById('handoverLead'), extractListValue(handoverContextSection, 'Handover Lead'));
+      setFieldValue(document.getElementById('handoverDate'), extractListValue(handoverContextSection, 'Handover Date'));
+      setSelectByText(document.getElementById('programStatus'), extractListValue(handoverContextSection, 'Status'));
+
+      TABLE_KEYS.forEach((key) => {
+        const section = extractSection(normalizedMarkdown, TABLE_CONFIG[key].title);
+        const rows = parseSectionTableRows(section, TABLE_CONFIG[key].headers.length);
+        populateTable(key, rows);
+      });
+
+      const continuitySection = extractSection(normalizedMarkdown, 'Continuity Plan');
+      setFieldValue(document.getElementById('continuityPriorities'), extractSubSection(continuitySection, 'First 72-hour priorities'));
+      setFieldValue(document.getElementById('continuityOperations'), extractSubSection(continuitySection, 'Operations continuity steps'));
+      setFieldValue(document.getElementById('continuityIncident'), extractSubSection(continuitySection, 'Incident escalation and communication'));
+      setFieldValue(document.getElementById('continuityMonitoring'), extractSubSection(continuitySection, 'Service health monitoring and SLO guardrails'));
+    }
+
+    function exportMarkdown() {
+      const filledSections = getFilledSectionsCount();
+      if (filledSections < MIN_FILLED_SECTIONS) {
+        setMessage(`Fill at least ${MIN_FILLED_SECTIONS} sections before exporting.`, true);
+        updateExportState();
+        return;
+      }
+
+      const confirmed = window.confirm('Export checklist to Markdown now?');
+      if (!confirmed) {
+        setMessage('Export canceled.');
+        return;
+      }
+
+      const { markdown, today, programName } = buildMarkdown();
+      if (!markdown || !markdown.trim()) {
+        setMessage('Could not export: generated markdown is empty.', true);
+        return;
+      }
+      const slug = slugify(programName) || 'acquisition-merger';
+      const filename = `${slug}-handover-checklist-${today}.md`;
+      const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        link.remove();
+      }, 1200);
+      setMessage(`Exported ${filename}`);
+    }
+
+    async function importFromFileInput() {
+      const fileInput = document.getElementById('importFileInput');
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) {
+        setMessage('Select a markdown file first.', true);
+        return;
+      }
+
+      try {
+        const text = await readFileAsText(file);
+        importMarkdown(text);
+        setMessage(`Imported ${file.name}`);
+        updateExportState();
+      } catch (error) {
+        const details = error && error.message ? ` ${error.message}` : '';
+        setMessage(`Could not import this markdown file.${details}`, true);
+      } finally {
+        fileInput.value = '';
+      }
+    }
+
+    document.querySelectorAll('[data-add-row]').forEach((button) => {
+      button.addEventListener('click', () => addRow(button.dataset.addRow));
+    });
+
+    document.addEventListener('input', updateExportState);
+    document.addEventListener('change', updateExportState);
+    document.getElementById('exportBtn').addEventListener('click', exportMarkdown);
+    document.getElementById('importFileInput').addEventListener('change', importFromFileInput);
+
+    TABLE_KEYS.forEach((key) => {
+      addRow(key);
+    });
+    updateExportState();
+  </script>
+</body>
+</html>

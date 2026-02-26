@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cycle Time Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
+          },
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Cycle Time Analyzer</h1>
+      <p class="mt-2"><span class="inline-flex rounded-md border border-[#c9a23a] bg-[#fff3cf] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#6a4a1f]">Prototype</span></p>
+      <p class="mt-3 max-w-3xl text-[#d1d5db]">Paste issue export data (CSV or JSON) to estimate lead and cycle percentiles, identify bottleneck stages, and generate practical next actions.</p>
+    </div>
+  </header>
+
+  <main class="w-full bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <h2 class="font-display text-2xl font-bold">Input Data</h2>
+        <p class="mt-2 text-sm text-[#4b5563]">Supported formats: CSV with headers or JSON array/object. Date fields can be ISO strings or Unix timestamps.</p>
+
+        <label class="mt-5 block text-sm font-semibold text-[#374151]">
+          Pasted issue data
+          <textarea id="dataInput" rows="13" placeholder="Paste CSV or JSON here..." class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-3 text-sm text-[#1f2937]"></textarea>
+        </label>
+
+        <details class="mt-4 rounded-lg border border-[#e2e2e2] bg-[#fafafa] p-3 text-sm text-[#4b5563]">
+          <summary class="cursor-pointer font-semibold text-[#374151]">Input expectations</summary>
+          <div class="mt-2 space-y-2">
+            <p class="m-0">Lead time uses <span class="font-semibold">created -&gt; completed</span>. Cycle time uses <span class="font-semibold">started -&gt; completed</span>.</p>
+            <p class="m-0">Defaults:</p>
+            <ul class="m-0 list-disc pl-5">
+              <li>Created aliases: <code>created, created_at, createdAt, issue_created</code></li>
+              <li>Started aliases: <code>started, in_progress_at, started_at, startedAt</code></li>
+              <li>Completed aliases: <code>done, resolved, completed, closed, completed_at</code></li>
+            </ul>
+          </div>
+        </details>
+
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="text-sm font-semibold text-[#374151]">
+            Format
+            <select id="format" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+              <option value="auto">Auto detect</option>
+              <option value="csv">CSV</option>
+              <option value="json">JSON</option>
+            </select>
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Duration unit for numeric stage fields
+            <select id="durationUnit" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+              <option value="auto">Auto</option>
+              <option value="days">Days</option>
+              <option value="hours">Hours</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 gap-4">
+          <label class="text-sm font-semibold text-[#374151]">
+            Created field aliases (comma-separated)
+            <input id="createdAliases" type="text" value="created, created_at, createdAt, issue_created" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Started field aliases (comma-separated)
+            <input id="startedAliases" type="text" value="started, started_at, startedAt, in_progress_at, inProgressAt" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Completed field aliases (comma-separated)
+            <input id="completedAliases" type="text" value="done, done_at, resolved, resolved_at, completed, completed_at, closed, closed_at" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+          </label>
+          <label class="text-sm font-semibold text-[#374151]">
+            Stage fields (optional, comma-separated)
+            <input id="stageFields" type="text" placeholder="e.g., backlog_days, dev_days, review_days, qa_days" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+          </label>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button id="analyzeBtn" type="button" class="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1f1f1f] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-ink">Analyze Data</button>
+          <button id="sampleBtn" type="button" class="rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-brand-dark">Load CSV Sample</button>
+          <button id="sampleJsonBtn" type="button" class="rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-brand-dark">Load JSON Sample</button>
+          <button id="clearBtn" type="button" class="rounded-md border border-[#cfcfcf] bg-white px-4 py-2.5 text-sm font-semibold text-[#374151] transition hover:bg-[#f7f7f7] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white">Clear</button>
+        </div>
+
+        <p id="status" class="mt-4 text-sm text-[#4b5563]"></p>
+      </section>
+
+      <section class="rounded-xl border-2 border-brand bg-ink p-6 text-white shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
+        <h2 class="font-display text-2xl font-bold">Analysis</h2>
+        <p id="analysisMeta" class="mt-2 text-sm text-[#d1d5db]">No dataset analyzed yet.</p>
+
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="rounded-lg border border-[#3c3c3c] bg-[#313131] p-4">
+            <p class="text-xs uppercase tracking-wide text-[#c4c4c4]">Lead Time (days)</p>
+            <div class="mt-2 grid grid-cols-3 gap-2 text-sm">
+              <div><p class="text-[#9ca3af]">P50</p><p id="leadP50" class="text-xl font-bold text-brand">-</p></div>
+              <div><p class="text-[#9ca3af]">P75</p><p id="leadP75" class="text-xl font-bold text-brand">-</p></div>
+              <div><p class="text-[#9ca3af]">P90</p><p id="leadP90" class="text-xl font-bold text-brand">-</p></div>
+            </div>
+            <p id="leadCount" class="mt-2 text-xs text-[#d1d5db]"></p>
+          </div>
+
+          <div class="rounded-lg border border-[#3c3c3c] bg-[#313131] p-4">
+            <p class="text-xs uppercase tracking-wide text-[#c4c4c4]">Cycle Time (days)</p>
+            <div class="mt-2 grid grid-cols-3 gap-2 text-sm">
+              <div><p class="text-[#9ca3af]">P50</p><p id="cycleP50" class="text-xl font-bold text-brand">-</p></div>
+              <div><p class="text-[#9ca3af]">P75</p><p id="cycleP75" class="text-xl font-bold text-brand">-</p></div>
+              <div><p class="text-[#9ca3af]">P90</p><p id="cycleP90" class="text-xl font-bold text-brand">-</p></div>
+            </div>
+            <p id="cycleCount" class="mt-2 text-xs text-[#d1d5db]"></p>
+          </div>
+        </div>
+
+        <div class="mt-5 rounded-lg border border-[#3c3c3c] bg-[#313131] p-4">
+          <h3 class="text-lg font-semibold">Stage Bottlenecks</h3>
+          <div class="mt-3 w-full overflow-x-auto">
+            <table class="w-full min-w-[520px] border-collapse text-sm">
+              <thead>
+                <tr class="text-left text-[#d1d5db]">
+                  <th class="border-b border-[#424242] py-2 pr-2">Stage</th>
+                  <th class="border-b border-[#424242] py-2 pr-2">Avg (days)</th>
+                  <th class="border-b border-[#424242] py-2 pr-2">P75</th>
+                  <th class="border-b border-[#424242] py-2 pr-2">Share</th>
+                  <th class="border-b border-[#424242] py-2">Samples</th>
+                </tr>
+              </thead>
+              <tbody id="bottleneckRows"></tbody>
+            </table>
+          </div>
+          <p id="bottleneckHint" class="mt-2 text-xs text-[#d1d5db]"></p>
+        </div>
+
+        <div class="mt-5 rounded-lg border border-[#3c3c3c] bg-[#313131] p-4">
+          <h3 class="text-lg font-semibold">Recommendations</h3>
+          <ol id="recommendationList" class="mt-3 list-decimal space-y-2 pl-5 text-sm text-[#f3f4f6]"></ol>
+        </div>
+
+        <div class="mt-5 rounded-lg border border-[#3c3c3c] bg-[#313131] p-4">
+          <h3 class="text-lg font-semibold">Downloadable Summary</h3>
+          <p class="mt-2 text-xs text-[#d1d5db]">Includes metrics, bottlenecks, and recommendations.</p>
+          <div class="mt-3 flex flex-wrap gap-3">
+            <button id="downloadJsonBtn" type="button" class="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-ink transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand">Download JSON</button>
+            <button id="downloadTxtBtn" type="button" class="rounded-md border border-[#565656] bg-[#232323] px-3 py-2 text-sm font-semibold text-[#f3f4f6] transition hover:bg-[#2b2b2b] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#232323]">Download TXT</button>
+          </div>
+          <pre id="summaryPreview" class="mt-3 max-h-44 overflow-auto rounded-lg border border-[#424242] bg-[#232323] p-3 text-xs text-[#e5e7eb]"></pre>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Use this output to drive process improvements, not to grade individuals.</p>
+  </footer>
+
+  <script>
+    const SAMPLE = `issue_key,created,started,resolved,dev_days,review_days,qa_days
+ISSUE-1,2026-01-03T09:00:00Z,2026-01-05T10:00:00Z,2026-01-10T18:00:00Z,3.2,1.1,0.7
+ISSUE-2,2026-01-05T11:00:00Z,2026-01-06T09:00:00Z,2026-01-12T15:00:00Z,3.8,1.5,1.2
+ISSUE-3,2026-01-07T08:00:00Z,2026-01-09T09:30:00Z,2026-01-20T16:00:00Z,5.2,2.4,1.4
+ISSUE-4,2026-01-09T12:00:00Z,2026-01-10T10:00:00Z,2026-01-16T11:30:00Z,2.9,1.0,0.6
+ISSUE-5,2026-01-11T15:30:00Z,2026-01-13T09:00:00Z,2026-01-25T18:00:00Z,6.8,2.8,1.7`;
+    const SAMPLE_JSON = JSON.stringify([
+      {
+        issue_key: 'ISSUE-1',
+        created: '2026-01-03T09:00:00Z',
+        started: '2026-01-05T10:00:00Z',
+        resolved: '2026-01-10T18:00:00Z',
+        dev_days: 3.2,
+        review_days: 1.1,
+        qa_days: 0.7
+      },
+      {
+        issue_key: 'ISSUE-2',
+        created: '2026-01-05T11:00:00Z',
+        started: '2026-01-06T09:00:00Z',
+        resolved: '2026-01-12T15:00:00Z',
+        dev_days: 3.8,
+        review_days: 1.5,
+        qa_days: 1.2
+      },
+      {
+        issue_key: 'ISSUE-3',
+        created: '2026-01-07T08:00:00Z',
+        started: '2026-01-09T09:30:00Z',
+        resolved: '2026-01-20T16:00:00Z',
+        dev_days: 5.2,
+        review_days: 2.4,
+        qa_days: 1.4
+      }
+    ], null, 2);
+
+    const KEY_STOP_WORDS = ['id', 'key', 'summary', 'title', 'type', 'priority', 'assignee', 'reporter', 'team', 'project', 'status', 'labels'];
+    const STAGE_KEYWORDS = ['backlog', 'todo', 'selected', 'analysis', 'design', 'dev', 'development', 'build', 'review', 'qa', 'test', 'blocked', 'waiting', 'ready'];
+    const DURATION_HINTS = ['duration', 'days', 'hours', 'hrs', 'minutes', 'mins', 'time'];
+
+    const STAGE_SEQUENCE = [
+      { label: 'Created', aliases: ['created', 'created_at', 'createdat', 'issue_created'] },
+      { label: 'Selected', aliases: ['selected', 'ready', 'ready_at', 'todo', 'todo_at'] },
+      { label: 'Started', aliases: ['started', 'started_at', 'startedat', 'in_progress', 'in_progress_at', 'inprogressat'] },
+      { label: 'Review', aliases: ['review', 'review_at', 'in_review', 'in_review_at'] },
+      { label: 'QA', aliases: ['qa', 'qa_at', 'testing', 'test_at', 'verified_at'] },
+      { label: 'Completed', aliases: ['done', 'done_at', 'resolved', 'resolved_at', 'completed', 'completed_at', 'closed', 'closed_at'] }
+    ];
+
+    const dataInput = document.getElementById('dataInput');
+    const formatEl = document.getElementById('format');
+    const durationUnitEl = document.getElementById('durationUnit');
+    const createdAliasesEl = document.getElementById('createdAliases');
+    const startedAliasesEl = document.getElementById('startedAliases');
+    const completedAliasesEl = document.getElementById('completedAliases');
+    const stageFieldsEl = document.getElementById('stageFields');
+    const statusEl = document.getElementById('status');
+
+    const analysisMetaEl = document.getElementById('analysisMeta');
+    const leadP50El = document.getElementById('leadP50');
+    const leadP75El = document.getElementById('leadP75');
+    const leadP90El = document.getElementById('leadP90');
+    const cycleP50El = document.getElementById('cycleP50');
+    const cycleP75El = document.getElementById('cycleP75');
+    const cycleP90El = document.getElementById('cycleP90');
+    const leadCountEl = document.getElementById('leadCount');
+    const cycleCountEl = document.getElementById('cycleCount');
+    const bottleneckRowsEl = document.getElementById('bottleneckRows');
+    const bottleneckHintEl = document.getElementById('bottleneckHint');
+    const recommendationListEl = document.getElementById('recommendationList');
+    const summaryPreviewEl = document.getElementById('summaryPreview');
+
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const sampleBtn = document.getElementById('sampleBtn');
+    const sampleJsonBtn = document.getElementById('sampleJsonBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+    const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+
+    let lastSummary = null;
+
+    function syncButtonStates() {
+      const hasInput = dataInput.value.trim().length > 0;
+      const hasSummary = !!lastSummary;
+      analyzeBtn.disabled = !hasInput;
+      clearBtn.disabled = !hasInput && !hasSummary;
+      downloadJsonBtn.disabled = !hasSummary;
+      downloadTxtBtn.disabled = !hasSummary;
+    }
+
+    function normalizeKey(key) {
+      return String(key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function parseAliasList(value) {
+      return String(value || '')
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
+
+    function readField(record, key) {
+      if (!record || typeof record !== 'object') return undefined;
+      if (Object.prototype.hasOwnProperty.call(record, key)) return record[key];
+      const target = normalizeKey(key);
+      for (const [candidate, value] of Object.entries(record)) {
+        if (normalizeKey(candidate) === target) return value;
+      }
+      return undefined;
+    }
+
+    function readByAliases(record, aliases) {
+      for (const alias of aliases) {
+        const value = readField(record, alias);
+        if (value !== undefined && value !== null && String(value).trim() !== '') {
+          return value;
+        }
+      }
+      return undefined;
+    }
+
+    function parseDateValue(value) {
+      if (value === undefined || value === null || value === '') return NaN;
+      if (value instanceof Date) {
+        const ts = value.getTime();
+        return Number.isFinite(ts) ? ts : NaN;
+      }
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        if (value > 1e12) return value;
+        if (value > 1e9) return value * 1000;
+      }
+      const str = String(value).trim();
+      if (!str) return NaN;
+      if (/^\d+(\.\d+)?$/.test(str)) {
+        const num = Number(str);
+        if (!Number.isFinite(num)) return NaN;
+        if (num > 1e12) return num;
+        if (num > 1e9) return num * 1000;
+      }
+      const ts = Date.parse(str);
+      return Number.isFinite(ts) ? ts : NaN;
+    }
+
+    function parseDurationToDays(value, keyName, unitMode) {
+      if (value === undefined || value === null || value === '') return NaN;
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return normalizeNumericDuration(value, keyName, unitMode);
+      }
+      const str = String(value).trim().toLowerCase();
+      if (!str) return NaN;
+
+      if (/^-?\d+(\.\d+)?$/.test(str)) {
+        return normalizeNumericDuration(Number(str), keyName, unitMode);
+      }
+
+      const matches = Array.from(str.matchAll(/(-?\d+(?:\.\d+)?)\s*(d|day|days|h|hr|hrs|hour|hours|m|min|mins|minute|minutes)?/g));
+      if (!matches.length) return NaN;
+
+      let totalDays = 0;
+      let consumed = 0;
+      for (const m of matches) {
+        const raw = Number(m[1]);
+        if (!Number.isFinite(raw)) continue;
+        const unit = (m[2] || '').toLowerCase();
+        if (!unit || unit.startsWith('d')) totalDays += raw;
+        else if (unit.startsWith('h')) totalDays += raw / 24;
+        else if (unit.startsWith('m')) totalDays += raw / 1440;
+        consumed += m[0].length;
+      }
+      if (consumed < Math.min(str.length, 2)) return NaN;
+      return totalDays;
+    }
+
+    function normalizeNumericDuration(num, keyName, unitMode) {
+      if (!Number.isFinite(num)) return NaN;
+      if (unitMode === 'days') return num;
+      if (unitMode === 'hours') return num / 24;
+      const lowered = String(keyName || '').toLowerCase();
+      if (lowered.includes('hour') || lowered.includes('hrs') || lowered.includes('hr')) return num / 24;
+      if (lowered.includes('minute') || lowered.includes('mins') || lowered.includes('min')) return num / 1440;
+      return num;
+    }
+
+    function formatDays(value) {
+      if (!Number.isFinite(value)) return '-';
+      if (value >= 100) return value.toFixed(0);
+      if (value >= 10) return value.toFixed(1);
+      return value.toFixed(2);
+    }
+
+    function parseInput(raw, format) {
+      if (!raw || !raw.trim()) {
+        throw new Error('Paste CSV or JSON issue data first.');
+      }
+      const trimmed = raw.trim();
+      const effectiveFormat = format === 'auto'
+        ? (trimmed.startsWith('{') || trimmed.startsWith('[') ? 'json' : 'csv')
+        : format;
+
+      if (effectiveFormat === 'json') {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && typeof parsed === 'object') {
+          const arrayKeys = ['issues', 'items', 'data', 'tickets', 'rows'];
+          for (const key of arrayKeys) {
+            if (Array.isArray(parsed[key])) return parsed[key];
+          }
+          return [parsed];
+        }
+        throw new Error('JSON must be an array of records or object containing one.');
+      }
+
+      return parseCSV(trimmed);
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let current = '';
+      let row = [];
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i += 1) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i += 1;
+          } else {
+            inQuotes = !inQuotes;
+          }
+          continue;
+        }
+
+        if (char === ',' && !inQuotes) {
+          row.push(current);
+          current = '';
+          continue;
+        }
+
+        if ((char === '\n' || char === '\r') && !inQuotes) {
+          if (char === '\r' && next === '\n') i += 1;
+          row.push(current);
+          rows.push(row);
+          row = [];
+          current = '';
+          continue;
+        }
+
+        current += char;
+      }
+
+      if (current.length || row.length) {
+        row.push(current);
+        rows.push(row);
+      }
+
+      const filtered = rows.filter((r) => r.some((cell) => String(cell || '').trim() !== ''));
+      if (filtered.length < 2) {
+        throw new Error('CSV needs a header row and at least one data row.');
+      }
+
+      const headers = filtered[0].map((h) => String(h || '').trim());
+      const records = [];
+
+      for (let i = 1; i < filtered.length; i += 1) {
+        const source = filtered[i];
+        const record = {};
+        for (let j = 0; j < headers.length; j += 1) {
+          record[headers[j] || `column_${j + 1}`] = source[j] !== undefined ? String(source[j]).trim() : '';
+        }
+        records.push(record);
+      }
+
+      return records;
+    }
+
+    function collectKeyUniverse(records) {
+      const keys = new Set();
+      records.forEach((record) => {
+        if (!record || typeof record !== 'object') return;
+        Object.keys(record).forEach((key) => keys.add(key));
+      });
+      return Array.from(keys);
+    }
+
+    function percentile(values, p) {
+      if (!values.length) return NaN;
+      const sorted = values.slice().sort((a, b) => a - b);
+      if (sorted.length === 1) return sorted[0];
+      const index = (sorted.length - 1) * p;
+      const lower = Math.floor(index);
+      const upper = Math.ceil(index);
+      if (lower === upper) return sorted[lower];
+      const fraction = index - lower;
+      return sorted[lower] + (sorted[upper] - sorted[lower]) * fraction;
+    }
+
+    function computeDistribution(values) {
+      if (!values.length) {
+        return { count: 0, p50: NaN, p75: NaN, p90: NaN, avg: NaN };
+      }
+      const avg = values.reduce((sum, n) => sum + n, 0) / values.length;
+      return {
+        count: values.length,
+        p50: percentile(values, 0.5),
+        p75: percentile(values, 0.75),
+        p90: percentile(values, 0.9),
+        avg
+      };
+    }
+
+    function inferStageDurationFields(records, excludedAliases, unitMode) {
+      const keys = collectKeyUniverse(records);
+      const excluded = new Set(excludedAliases.map((a) => normalizeKey(a)));
+      const candidateStats = [];
+
+      keys.forEach((key) => {
+        const normalized = normalizeKey(key);
+        if (!normalized) return;
+        if (excluded.has(normalized)) return;
+        if (KEY_STOP_WORDS.includes(normalized)) return;
+        if (KEY_STOP_WORDS.some((word) => normalized.endsWith(word))) return;
+
+        const hasStageHint = STAGE_KEYWORDS.some((term) => normalized.includes(term));
+        const hasDurationHint = DURATION_HINTS.some((term) => normalized.includes(term));
+        if (!hasStageHint && !hasDurationHint) return;
+
+        let count = 0;
+        let sum = 0;
+        for (const record of records) {
+          const parsed = parseDurationToDays(readField(record, key), key, unitMode);
+          if (!Number.isFinite(parsed) || parsed < 0) continue;
+          count += 1;
+          sum += parsed;
+        }
+
+        if (count < Math.max(2, Math.ceil(records.length * 0.15))) return;
+
+        candidateStats.push({ key, count, avg: sum / count });
+      });
+
+      candidateStats.sort((a, b) => b.avg - a.avg);
+      return candidateStats.map((item) => item.key);
+    }
+
+    function detectStageTimestampKeys(records, requiredAliases) {
+      const keys = collectKeyUniverse(records);
+      const keyLookup = keys.map((key) => ({ key, normalized: normalizeKey(key) }));
+      const sequence = [];
+
+      STAGE_SEQUENCE.forEach((stage) => {
+        const combinedAliases = [...stage.aliases];
+        if (stage.label === 'Created') combinedAliases.push(...requiredAliases.created.map((a) => normalizeKey(a)));
+        if (stage.label === 'Started') combinedAliases.push(...requiredAliases.started.map((a) => normalizeKey(a)));
+        if (stage.label === 'Completed') combinedAliases.push(...requiredAliases.completed.map((a) => normalizeKey(a)));
+
+        const found = keyLookup.find((entry) => combinedAliases.includes(entry.normalized));
+        if (found) {
+          sequence.push({ label: stage.label, key: found.key });
+        }
+      });
+
+      return sequence;
+    }
+
+    function computeStageBottlenecks(records, context) {
+      const unitMode = durationUnitEl.value;
+      const manualStageFields = parseAliasList(stageFieldsEl.value);
+      const excludedAliases = [...context.createdAliases, ...context.startedAliases, ...context.completedAliases];
+
+      const stageFields = manualStageFields.length
+        ? manualStageFields
+        : inferStageDurationFields(records, excludedAliases, unitMode);
+
+      if (stageFields.length) {
+        const stageStats = stageFields.map((field) => {
+          const values = [];
+          records.forEach((record) => {
+            const parsed = parseDurationToDays(readField(record, field), field, unitMode);
+            if (Number.isFinite(parsed) && parsed >= 0) values.push(parsed);
+          });
+          return { name: prettifyField(field), values, source: 'explicit-duration' };
+        }).filter((item) => item.values.length > 0);
+
+        return finalizeStageStats(stageStats, 'Stage fields interpreted as duration columns.');
+      }
+
+      const stageKeys = detectStageTimestampKeys(records, context);
+      if (stageKeys.length < 2) {
+        return { bottlenecks: [], hint: 'Could not infer stage bottlenecks from this dataset. Add stage duration fields for stronger results.' };
+      }
+
+      const segments = [];
+      for (let i = 0; i < stageKeys.length - 1; i += 1) {
+        segments.push({
+          name: `${stageKeys[i].label} -> ${stageKeys[i + 1].label}`,
+          startKey: stageKeys[i].key,
+          endKey: stageKeys[i + 1].key,
+          values: []
+        });
+      }
+
+      records.forEach((record) => {
+        segments.forEach((segment) => {
+          const startTs = parseDateValue(readField(record, segment.startKey));
+          const endTs = parseDateValue(readField(record, segment.endKey));
+          if (!Number.isFinite(startTs) || !Number.isFinite(endTs) || endTs <= startTs) return;
+          segment.values.push((endTs - startTs) / 86400000);
+        });
+      });
+
+      const stageStats = segments
+        .filter((segment) => segment.values.length)
+        .map((segment) => ({ name: segment.name, values: segment.values, source: 'timestamp-segment' }));
+
+      return finalizeStageStats(stageStats, 'Stage bottlenecks derived from timestamp transitions.');
+    }
+
+    function finalizeStageStats(stageStats, hint) {
+      if (!stageStats.length) {
+        return { bottlenecks: [], hint: 'No stage duration data found.' };
+      }
+
+      const aggregated = stageStats.map((stage) => {
+        const distribution = computeDistribution(stage.values);
+        return {
+          name: stage.name,
+          count: distribution.count,
+          avg: distribution.avg,
+          p50: distribution.p50,
+          p75: distribution.p75,
+          p90: distribution.p90,
+          source: stage.source
+        };
+      });
+
+      const totalAvg = aggregated.reduce((sum, stage) => sum + stage.avg, 0);
+      aggregated.forEach((stage) => {
+        stage.share = totalAvg > 0 ? (stage.avg / totalAvg) * 100 : 0;
+      });
+
+      aggregated.sort((a, b) => b.avg - a.avg);
+      return { bottlenecks: aggregated.slice(0, 10), hint };
+    }
+
+    function prettifyField(field) {
+      return String(field || '')
+        .replace(/_/g, ' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function buildRecommendations(context) {
+      const recs = [];
+      const lead = context.leadDist;
+      const cycle = context.cycleDist;
+      const bottlenecks = context.bottlenecks;
+
+      if (lead.count > 0 && Number.isFinite(lead.p90) && lead.p90 > 30) {
+        recs.push(`Lead-time tail is high (P90 ${formatDays(lead.p90)} days). Split large work into thinner slices and cap work-in-progress for aging items.`);
+      }
+
+      if (cycle.count > 0 && Number.isFinite(cycle.p90) && cycle.p90 > 15) {
+        recs.push(`Cycle-time P90 is ${formatDays(cycle.p90)} days. Add pull-based WIP limits in active development to reduce queueing.`);
+      }
+
+      if (lead.count > 0 && Number.isFinite(lead.p50) && Number.isFinite(lead.p90) && lead.p50 > 0 && (lead.p90 / lead.p50) > 2.4) {
+        recs.push('Lead-time variability is large (long tail). Define an SLA for stale items and escalate blockers after 48 hours of inactivity.');
+      }
+
+      if (cycle.count > 0 && Number.isFinite(cycle.p50) && Number.isFinite(cycle.p90) && cycle.p50 > 0 && (cycle.p90 / cycle.p50) > 2.2) {
+        recs.push('Cycle-time variability suggests inconsistent flow. Standardize intake criteria and use explicit exit criteria per stage.');
+      }
+
+      if (bottlenecks.length) {
+        const top = bottlenecks[0];
+        if (top.share > 35) {
+          recs.push(`Primary bottleneck is ${top.name} (${formatDays(top.avg)} avg days, ${top.share.toFixed(1)}% of stage time). Prioritize automation and ownership in this stage first.`);
+        } else {
+          recs.push(`Largest stage delay is ${top.name}. Run a focused improvement experiment here before broad process changes.`);
+        }
+      } else {
+        recs.push('Stage bottlenecks are unclear from current fields. Add explicit stage durations or timestamp transitions per issue.');
+      }
+
+      if (context.invalidLead + context.invalidCycle > 0) {
+        recs.push('Data quality gap detected: missing or malformed date fields reduced sample size. Improve field completeness in the issue tracker export.');
+      }
+
+      if (context.totalRecords < 12) {
+        recs.push('Sample size is small. Re-run with more completed issues before setting firm delivery commitments.');
+      }
+
+      return recs.slice(0, 6);
+    }
+
+    function toSummaryText(summary) {
+      const lines = [];
+      lines.push('Cycle Time Analyzer Summary');
+      lines.push(`Generated: ${summary.generatedAt}`);
+      lines.push(`Records processed: ${summary.meta.totalRecords}`);
+      lines.push(`Lead samples: ${summary.metrics.lead.count} | Cycle samples: ${summary.metrics.cycle.count}`);
+      lines.push('');
+      lines.push('Lead Time Percentiles (days)');
+      lines.push(`- P50: ${formatDays(summary.metrics.lead.p50)}`);
+      lines.push(`- P75: ${formatDays(summary.metrics.lead.p75)}`);
+      lines.push(`- P90: ${formatDays(summary.metrics.lead.p90)}`);
+      lines.push('');
+      lines.push('Cycle Time Percentiles (days)');
+      lines.push(`- P50: ${formatDays(summary.metrics.cycle.p50)}`);
+      lines.push(`- P75: ${formatDays(summary.metrics.cycle.p75)}`);
+      lines.push(`- P90: ${formatDays(summary.metrics.cycle.p90)}`);
+      lines.push('');
+      lines.push('Stage Bottlenecks');
+      if (summary.bottlenecks.length) {
+        summary.bottlenecks.forEach((stage, index) => {
+          lines.push(`${index + 1}. ${stage.name} | avg ${formatDays(stage.avg)}d | P75 ${formatDays(stage.p75)}d | share ${stage.share.toFixed(1)}% | n=${stage.count}`);
+        });
+      } else {
+        lines.push('- No bottleneck stage could be inferred.');
+      }
+      lines.push('');
+      lines.push('Recommendations');
+      summary.recommendations.forEach((rec, index) => {
+        lines.push(`${index + 1}. ${rec}`);
+      });
+      return lines.join('\n');
+    }
+
+    function triggerDownload(filename, content, mime) {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function renderDistribution(prefix, distribution, elementRefs) {
+      elementRefs.p50.textContent = formatDays(distribution.p50);
+      elementRefs.p75.textContent = formatDays(distribution.p75);
+      elementRefs.p90.textContent = formatDays(distribution.p90);
+      elementRefs.count.textContent = `${prefix} samples: ${distribution.count}`;
+    }
+
+    function renderBottlenecks(result) {
+      bottleneckRowsEl.innerHTML = '';
+      if (!result.bottlenecks.length) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="5" class="py-3 text-sm text-[#d1d5db]">No stage bottleneck data available.</td>';
+        bottleneckRowsEl.appendChild(row);
+      } else {
+        result.bottlenecks.forEach((stage) => {
+          const row = document.createElement('tr');
+          row.className = 'border-b border-[#404040] last:border-b-0';
+          row.innerHTML = `
+            <td class="py-2 pr-2 text-[#f3f4f6]">${stage.name}</td>
+            <td class="py-2 pr-2 text-[#f3f4f6]">${formatDays(stage.avg)}</td>
+            <td class="py-2 pr-2 text-[#f3f4f6]">${formatDays(stage.p75)}</td>
+            <td class="py-2 pr-2 text-[#f3f4f6]">${stage.share.toFixed(1)}%</td>
+            <td class="py-2 text-[#f3f4f6]">${stage.count}</td>
+          `;
+          bottleneckRowsEl.appendChild(row);
+        });
+      }
+      bottleneckHintEl.textContent = result.hint || '';
+    }
+
+    function renderRecommendations(recommendations) {
+      recommendationListEl.innerHTML = '';
+      recommendations.forEach((rec) => {
+        const li = document.createElement('li');
+        li.textContent = rec;
+        recommendationListEl.appendChild(li);
+      });
+    }
+
+    function runAnalysis() {
+      try {
+        statusEl.textContent = '';
+        const records = parseInput(dataInput.value, formatEl.value);
+        if (!records.length) {
+          throw new Error('No records found in input.');
+        }
+
+        const createdAliases = parseAliasList(createdAliasesEl.value);
+        const startedAliases = parseAliasList(startedAliasesEl.value);
+        const completedAliases = parseAliasList(completedAliasesEl.value);
+
+        const leadValues = [];
+        const cycleValues = [];
+        let invalidLead = 0;
+        let invalidCycle = 0;
+
+        records.forEach((record) => {
+          const createdTs = parseDateValue(readByAliases(record, createdAliases));
+          const startedTs = parseDateValue(readByAliases(record, startedAliases));
+          const completedTs = parseDateValue(readByAliases(record, completedAliases));
+
+          if (Number.isFinite(createdTs) && Number.isFinite(completedTs) && completedTs > createdTs) {
+            leadValues.push((completedTs - createdTs) / 86400000);
+          } else {
+            invalidLead += 1;
+          }
+
+          if (Number.isFinite(startedTs) && Number.isFinite(completedTs) && completedTs > startedTs) {
+            cycleValues.push((completedTs - startedTs) / 86400000);
+          } else {
+            invalidCycle += 1;
+          }
+        });
+
+        const leadDist = computeDistribution(leadValues);
+        const cycleDist = computeDistribution(cycleValues);
+
+        const stageResult = computeStageBottlenecks(records, {
+          createdAliases,
+          startedAliases,
+          completedAliases
+        });
+
+        const recommendations = buildRecommendations({
+          leadDist,
+          cycleDist,
+          bottlenecks: stageResult.bottlenecks,
+          totalRecords: records.length,
+          invalidLead,
+          invalidCycle
+        });
+
+        renderDistribution('Lead', leadDist, {
+          p50: leadP50El,
+          p75: leadP75El,
+          p90: leadP90El,
+          count: leadCountEl
+        });
+
+        renderDistribution('Cycle', cycleDist, {
+          p50: cycleP50El,
+          p75: cycleP75El,
+          p90: cycleP90El,
+          count: cycleCountEl
+        });
+
+        renderBottlenecks(stageResult);
+        renderRecommendations(recommendations);
+
+        analysisMetaEl.textContent = `${records.length} records analyzed. Invalid lead rows: ${invalidLead}. Invalid cycle rows: ${invalidCycle}.`;
+        statusEl.textContent = 'Analysis complete.';
+
+        lastSummary = {
+          generatedAt: new Date().toISOString(),
+          meta: {
+            totalRecords: records.length,
+            invalidLeadRows: invalidLead,
+            invalidCycleRows: invalidCycle,
+            format: formatEl.value,
+            createdAliases,
+            startedAliases,
+            completedAliases,
+            stageFields: parseAliasList(stageFieldsEl.value)
+          },
+          metrics: {
+            lead: leadDist,
+            cycle: cycleDist
+          },
+          bottlenecks: stageResult.bottlenecks,
+          recommendations
+        };
+
+        summaryPreviewEl.textContent = toSummaryText(lastSummary);
+        syncButtonStates();
+      } catch (error) {
+        statusEl.textContent = error.message || 'Could not parse data.';
+        syncButtonStates();
+      }
+    }
+
+    analyzeBtn.addEventListener('click', runAnalysis);
+
+    sampleBtn.addEventListener('click', () => {
+      dataInput.value = SAMPLE;
+      stageFieldsEl.value = 'dev_days, review_days, qa_days';
+      formatEl.value = 'csv';
+      statusEl.textContent = 'Sample data loaded. Click Analyze Data.';
+      syncButtonStates();
+    });
+
+    sampleJsonBtn.addEventListener('click', () => {
+      dataInput.value = SAMPLE_JSON;
+      stageFieldsEl.value = 'dev_days, review_days, qa_days';
+      formatEl.value = 'json';
+      statusEl.textContent = 'JSON sample data loaded. Click Analyze Data.';
+      syncButtonStates();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      dataInput.value = '';
+      stageFieldsEl.value = '';
+      statusEl.textContent = 'Input cleared.';
+      analysisMetaEl.textContent = 'No dataset analyzed yet.';
+      leadP50El.textContent = '-';
+      leadP75El.textContent = '-';
+      leadP90El.textContent = '-';
+      cycleP50El.textContent = '-';
+      cycleP75El.textContent = '-';
+      cycleP90El.textContent = '-';
+      leadCountEl.textContent = '';
+      cycleCountEl.textContent = '';
+      bottleneckRowsEl.innerHTML = '';
+      bottleneckHintEl.textContent = '';
+      recommendationListEl.innerHTML = '';
+      summaryPreviewEl.textContent = '';
+      lastSummary = null;
+      syncButtonStates();
+    });
+
+    downloadJsonBtn.addEventListener('click', () => {
+      if (!lastSummary) {
+        statusEl.textContent = 'Run analysis before downloading.';
+        syncButtonStates();
+        return;
+      }
+      triggerDownload('cycle-time-summary.json', JSON.stringify(lastSummary, null, 2), 'application/json');
+    });
+
+    downloadTxtBtn.addEventListener('click', () => {
+      if (!lastSummary) {
+        statusEl.textContent = 'Run analysis before downloading.';
+        syncButtonStates();
+        return;
+      }
+      triggerDownload('cycle-time-summary.txt', toSummaryText(lastSummary), 'text/plain;charset=utf-8');
+    });
+
+    dataInput.addEventListener('input', syncButtonStates);
+    syncButtonStates();
+  </script>
+</body>
+</html>

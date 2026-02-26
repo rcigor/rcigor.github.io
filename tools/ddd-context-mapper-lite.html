@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lite DDD mapper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#F2C94C',
+            'brand-dark': '#D4AB2B',
+            ink: '#2B2B2B',
+            stone: '#ECECEC',
+            slate: '#6B7280'
+          },
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Lite DDD mapper</h1>
+      <p class="mt-2"><span class="inline-flex rounded-md border border-[#c9a23a] bg-[#fff3cf] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#6a4a1f]">Prototype</span></p>
+      <p class="mt-3 max-w-3xl text-[#d1d5db]">Define bounded contexts and integration relationships, then share a lightweight map as JSON.</p>
+    </div>
+  </header>
+
+  <main class="w-full bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1.2fr]">
+      <section class="space-y-6">
+        <article class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+          <h2 class="font-display text-2xl font-bold">Bounded Contexts</h2>
+          <p class="mt-2 text-sm text-[#4b5563]">Capture each context and its primary owner.</p>
+
+          <form id="contextForm" class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label class="text-sm font-semibold text-[#374151]">
+              Context name
+              <input id="contextName" type="text" placeholder="e.g., Ordering" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm" required>
+            </label>
+            <label class="text-sm font-semibold text-[#374151]">
+              Ownership
+              <input id="contextOwner" type="text" placeholder="e.g., Commerce Team" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm" required>
+            </label>
+            <div class="sm:col-span-2">
+              <button type="submit" class="rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f1f1f]">Add context</button>
+            </div>
+          </form>
+
+          <p id="contextMsg" class="mt-3 text-xs text-[#6b7280]"></p>
+
+          <div class="mt-4 overflow-hidden rounded-lg border border-[#d9d9d9]">
+            <table class="w-full border-collapse text-left">
+              <thead class="bg-[#fafafa] text-xs uppercase tracking-wide text-[#6b7280]">
+                <tr>
+                  <th class="px-3 py-2 font-semibold">Context</th>
+                  <th class="px-3 py-2 font-semibold">Owner</th>
+                  <th class="px-3 py-2 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="contextsTable" class="text-sm text-[#2f2f2f]"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+          <h2 class="font-display text-2xl font-bold">Relationships</h2>
+          <p class="mt-2 text-sm text-[#4b5563]">Describe upstream/downstream flow, integration type, and ownership.</p>
+
+          <form id="relationshipForm" class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label class="text-sm font-semibold text-[#374151]">
+              Upstream context
+              <select id="upstreamContext" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm" required></select>
+            </label>
+            <label class="text-sm font-semibold text-[#374151]">
+              Downstream context
+              <select id="downstreamContext" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm" required></select>
+            </label>
+            <label class="text-sm font-semibold text-[#374151]">
+              Integration type
+              <select id="integrationType" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm" required>
+                <option value="Published language API">Published language API</option>
+                <option value="Open host service">Open host service</option>
+                <option value="Domain events">Domain events</option>
+                <option value="Shared kernel">Shared kernel</option>
+                <option value="Batch or file transfer">Batch or file transfer</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </label>
+            <label id="customIntegrationWrap" class="hidden text-sm font-semibold text-[#374151]">
+              Custom integration
+              <input id="customIntegration" type="text" placeholder="e.g., Anti-corruption layer" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+            </label>
+            <label class="text-sm font-semibold text-[#374151] sm:col-span-2">
+              Ownership
+              <input id="relationshipOwner" type="text" placeholder="e.g., Platform Team" class="mt-2 w-full rounded-lg border border-[#d2d2d2] bg-white p-2.5 text-sm">
+            </label>
+            <div class="sm:col-span-2">
+              <button type="submit" class="rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f1f1f]">Add relationship</button>
+            </div>
+          </form>
+
+          <p id="relationshipMsg" class="mt-3 text-xs text-[#6b7280]"></p>
+
+          <div class="mt-4 overflow-hidden rounded-lg border border-[#d9d9d9]">
+            <table class="w-full border-collapse text-left">
+              <thead class="bg-[#fafafa] text-xs uppercase tracking-wide text-[#6b7280]">
+                <tr>
+                  <th class="px-3 py-2 font-semibold">Flow</th>
+                  <th class="px-3 py-2 font-semibold">Integration</th>
+                  <th class="px-3 py-2 font-semibold">Owner</th>
+                  <th class="px-3 py-2 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="relationshipsTable" class="text-sm text-[#2f2f2f]"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="space-y-6">
+        <article class="rounded-xl border-2 border-brand bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+          <h2 class="font-display text-2xl font-bold">Visual Map</h2>
+          <p class="mt-2 text-sm text-[#4b5563]">Arrow direction shows upstream to downstream dependency flow.</p>
+
+          <div class="mt-5 overflow-auto rounded-lg border border-[#d2d2d2] bg-[#fcfcfc] p-3">
+            <svg id="mapSvg" class="h-[440px] min-w-[720px] w-full" role="img" aria-label="DDD context map"></svg>
+          </div>
+        </article>
+
+        <article class="rounded-xl border-2 border-brand bg-ink p-6 text-white shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
+          <h2 class="font-display text-2xl font-bold">Context Definitions</h2>
+          <p class="mt-2 text-sm text-[#d1d5db]">Copy or export as JSON for handoff, docs, or prompts.</p>
+
+          <textarea id="definitionsOutput" rows="15" readonly class="mt-4 w-full rounded-lg border border-[#434343] bg-[#313131] p-3 text-xs text-[#ededed]"></textarea>
+          <div class="mt-3 flex flex-wrap gap-3">
+            <button id="copyBtn" type="button" class="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-ink transition hover:bg-brand-dark">Copy definitions</button>
+            <button id="exportBtn" type="button" class="rounded-md border border-[#5f5f5f] bg-[#3a3a3a] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#4a4a4a]">Export JSON</button>
+          </div>
+          <p id="definitionsMsg" class="mt-2 text-xs text-[#c7c7c7]"></p>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Keep boundaries explicit, integration contracts intentional, and ownership clear.</p>
+  </footer>
+
+  <script>
+    const state = {
+      contexts: [],
+      relationships: []
+    };
+
+    const contextForm = document.getElementById('contextForm');
+    const relationshipForm = document.getElementById('relationshipForm');
+    const contextNameInput = document.getElementById('contextName');
+    const contextOwnerInput = document.getElementById('contextOwner');
+    const contextsTable = document.getElementById('contextsTable');
+    const relationshipsTable = document.getElementById('relationshipsTable');
+    const upstreamSelect = document.getElementById('upstreamContext');
+    const downstreamSelect = document.getElementById('downstreamContext');
+    const integrationTypeSelect = document.getElementById('integrationType');
+    const customIntegrationWrap = document.getElementById('customIntegrationWrap');
+    const customIntegrationInput = document.getElementById('customIntegration');
+    const relationshipOwnerInput = document.getElementById('relationshipOwner');
+    const contextMsg = document.getElementById('contextMsg');
+    const relationshipMsg = document.getElementById('relationshipMsg');
+    const mapSvg = document.getElementById('mapSvg');
+    const definitionsOutput = document.getElementById('definitionsOutput');
+    const definitionsMsg = document.getElementById('definitionsMsg');
+    const copyBtn = document.getElementById('copyBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    function createId(prefix) {
+      return `${prefix}-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+    }
+
+    function contextById(id) {
+      return state.contexts.find((context) => context.id === id) || null;
+    }
+
+    function clearMessage(target) {
+      target.textContent = '';
+    }
+
+    function setMessage(target, text) {
+      target.textContent = text;
+      setTimeout(() => {
+        if (target.textContent === text) target.textContent = '';
+      }, 2200);
+    }
+
+    function truncate(text, maxLen) {
+      const source = String(text || '');
+      if (source.length <= maxLen) return source;
+      return `${source.slice(0, maxLen - 1)}...`;
+    }
+
+    function integrationValue() {
+      const selected = integrationTypeSelect.value;
+      if (selected !== 'Custom') return selected;
+      return customIntegrationInput.value.trim();
+    }
+
+    function serializeDefinitions() {
+      return {
+        tool: 'ddd-context-mapper-lite',
+        exportedAt: new Date().toISOString(),
+        contexts: state.contexts.map((context) => ({
+          name: context.name,
+          ownership: context.owner
+        })),
+        relationships: state.relationships.map((relationship) => {
+          const upstream = contextById(relationship.upstreamId);
+          const downstream = contextById(relationship.downstreamId);
+          return {
+            upstream: upstream ? upstream.name : relationship.upstreamId,
+            downstream: downstream ? downstream.name : relationship.downstreamId,
+            integrationType: relationship.integrationType,
+            ownership: relationship.owner || ''
+          };
+        })
+      };
+    }
+
+    function updateDefinitionsOutput() {
+      definitionsOutput.value = JSON.stringify(serializeDefinitions(), null, 2);
+    }
+
+    function renderContextOptions() {
+      upstreamSelect.innerHTML = '';
+      downstreamSelect.innerHTML = '';
+
+      const upstreamPlaceholder = document.createElement('option');
+      upstreamPlaceholder.value = '';
+      upstreamPlaceholder.textContent = 'Select...';
+      const downstreamPlaceholder = document.createElement('option');
+      downstreamPlaceholder.value = '';
+      downstreamPlaceholder.textContent = 'Select...';
+
+      upstreamSelect.appendChild(upstreamPlaceholder);
+      downstreamSelect.appendChild(downstreamPlaceholder);
+
+      state.contexts.forEach((context) => {
+        const upstreamOption = document.createElement('option');
+        upstreamOption.value = context.id;
+        upstreamOption.textContent = context.name;
+
+        const downstreamOption = document.createElement('option');
+        downstreamOption.value = context.id;
+        downstreamOption.textContent = context.name;
+
+        upstreamSelect.appendChild(upstreamOption);
+        downstreamSelect.appendChild(downstreamOption);
+      });
+    }
+
+    function renderContextsTable() {
+      contextsTable.innerHTML = '';
+      if (!state.contexts.length) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td class="px-3 py-3 text-sm text-[#6b7280]" colspan="3">No contexts yet.</td>';
+        contextsTable.appendChild(row);
+        return;
+      }
+
+      state.contexts.forEach((context) => {
+        const row = document.createElement('tr');
+        row.className = 'border-t border-[#ececec]';
+
+        const nameCell = document.createElement('td');
+        nameCell.className = 'px-3 py-2.5 font-semibold';
+        nameCell.textContent = context.name;
+
+        const ownerCell = document.createElement('td');
+        ownerCell.className = 'px-3 py-2.5 text-[#4b5563]';
+        ownerCell.textContent = context.owner;
+
+        const actionCell = document.createElement('td');
+        actionCell.className = 'px-3 py-2.5 text-right';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'rounded-md border border-[#d8d8d8] px-2.5 py-1 text-xs font-semibold text-[#4b5563] transition hover:border-[#c2c2c2] hover:text-ink';
+        removeBtn.textContent = 'Remove';
+        removeBtn.dataset.contextId = context.id;
+
+        actionCell.appendChild(removeBtn);
+
+        row.appendChild(nameCell);
+        row.appendChild(ownerCell);
+        row.appendChild(actionCell);
+        contextsTable.appendChild(row);
+      });
+    }
+
+    function renderRelationshipsTable() {
+      relationshipsTable.innerHTML = '';
+      if (!state.relationships.length) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td class="px-3 py-3 text-sm text-[#6b7280]" colspan="4">No relationships yet.</td>';
+        relationshipsTable.appendChild(row);
+        return;
+      }
+
+      state.relationships.forEach((relationship) => {
+        const upstream = contextById(relationship.upstreamId);
+        const downstream = contextById(relationship.downstreamId);
+
+        const row = document.createElement('tr');
+        row.className = 'border-t border-[#ececec]';
+
+        const flowCell = document.createElement('td');
+        flowCell.className = 'px-3 py-2.5';
+        flowCell.textContent = `${upstream ? upstream.name : '?'} -> ${downstream ? downstream.name : '?'}`;
+
+        const integrationCell = document.createElement('td');
+        integrationCell.className = 'px-3 py-2.5 text-[#4b5563]';
+        integrationCell.textContent = relationship.integrationType;
+
+        const ownerCell = document.createElement('td');
+        ownerCell.className = 'px-3 py-2.5 text-[#4b5563]';
+        ownerCell.textContent = relationship.owner || '-';
+
+        const actionCell = document.createElement('td');
+        actionCell.className = 'px-3 py-2.5 text-right';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'rounded-md border border-[#d8d8d8] px-2.5 py-1 text-xs font-semibold text-[#4b5563] transition hover:border-[#c2c2c2] hover:text-ink';
+        removeBtn.textContent = 'Remove';
+        removeBtn.dataset.relationshipId = relationship.id;
+
+        actionCell.appendChild(removeBtn);
+
+        row.appendChild(flowCell);
+        row.appendChild(integrationCell);
+        row.appendChild(ownerCell);
+        row.appendChild(actionCell);
+        relationshipsTable.appendChild(row);
+      });
+    }
+
+    function edgePoint(from, to, nodeWidth, nodeHeight) {
+      const halfWidth = nodeWidth / 2;
+      const halfHeight = nodeHeight / 2;
+      const dx = to.cx - from.cx;
+      const dy = to.cy - from.cy;
+
+      if (dx === 0 && dy === 0) {
+        return { x: from.cx, y: from.cy };
+      }
+
+      const scale = 1 / Math.max(Math.abs(dx) / halfWidth, Math.abs(dy) / halfHeight);
+      return {
+        x: from.cx + dx * scale,
+        y: from.cy + dy * scale
+      };
+    }
+
+    function lineColor(integrationType) {
+      const value = String(integrationType || '').toLowerCase();
+      if (value.includes('event')) return '#2563eb';
+      if (value.includes('shared')) return '#b91c1c';
+      if (value.includes('host')) return '#059669';
+      return '#2b2b2b';
+    }
+
+    function svgEl(tagName, attributes) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+      Object.keys(attributes).forEach((key) => {
+        el.setAttribute(key, attributes[key]);
+      });
+      return el;
+    }
+
+    function renderMap() {
+      mapSvg.innerHTML = '';
+
+      if (!state.contexts.length) {
+        mapSvg.setAttribute('viewBox', '0 0 720 440');
+        const message = svgEl('text', {
+          x: '360',
+          y: '220',
+          'text-anchor': 'middle',
+          'font-size': '18',
+          fill: '#6b7280',
+          'font-family': 'Manrope, sans-serif'
+        });
+        message.textContent = 'Add bounded contexts to generate the map.';
+        mapSvg.appendChild(message);
+        return;
+      }
+
+      const total = state.contexts.length;
+      const nodeWidth = 190;
+      const nodeHeight = 88;
+      const columns = Math.max(1, Math.min(3, Math.ceil(Math.sqrt(total))));
+      const rows = Math.ceil(total / columns);
+      const horizontalGap = 100;
+      const verticalGap = 110;
+      const paddingX = 70;
+      const paddingY = 55;
+
+      const width = Math.max(720, paddingX * 2 + columns * nodeWidth + (columns - 1) * horizontalGap);
+      const height = Math.max(440, paddingY * 2 + rows * nodeHeight + (rows - 1) * verticalGap);
+      mapSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      const defs = svgEl('defs', {});
+      const marker = svgEl('marker', {
+        id: 'arrowhead',
+        markerWidth: '10',
+        markerHeight: '7',
+        refX: '9',
+        refY: '3.5',
+        orient: 'auto',
+        markerUnits: 'strokeWidth'
+      });
+      const markerPath = svgEl('path', {
+        d: 'M0,0 L10,3.5 L0,7 z',
+        fill: '#2b2b2b'
+      });
+      marker.appendChild(markerPath);
+      defs.appendChild(marker);
+      mapSvg.appendChild(defs);
+
+      const positions = new Map();
+      state.contexts.forEach((context, index) => {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
+        const x = paddingX + col * (nodeWidth + horizontalGap);
+        const y = paddingY + row * (nodeHeight + verticalGap);
+        positions.set(context.id, {
+          x,
+          y,
+          cx: x + nodeWidth / 2,
+          cy: y + nodeHeight / 2
+        });
+      });
+
+      state.relationships.forEach((relationship, index) => {
+        const from = positions.get(relationship.upstreamId);
+        const to = positions.get(relationship.downstreamId);
+        if (!from || !to) return;
+
+        const start = edgePoint(from, to, nodeWidth, nodeHeight);
+        const end = edgePoint(to, from, nodeWidth, nodeHeight);
+        const color = lineColor(relationship.integrationType);
+
+        const line = svgEl('line', {
+          x1: String(start.x),
+          y1: String(start.y),
+          x2: String(end.x),
+          y2: String(end.y),
+          stroke: color,
+          'stroke-width': '2.5',
+          'marker-end': 'url(#arrowhead)'
+        });
+        mapSvg.appendChild(line);
+
+        const label = svgEl('text', {
+          x: String((start.x + end.x) / 2),
+          y: String((start.y + end.y) / 2 - 8 - (index % 2) * 12),
+          'text-anchor': 'middle',
+          'font-size': '11',
+          'font-family': 'Manrope, sans-serif',
+          'font-weight': '700',
+          stroke: '#f9fafb',
+          'stroke-width': '3',
+          'paint-order': 'stroke',
+          fill: color
+        });
+        label.textContent = truncate(relationship.integrationType, 24);
+        mapSvg.appendChild(label);
+      });
+
+      state.contexts.forEach((context) => {
+        const position = positions.get(context.id);
+        if (!position) return;
+
+        const group = svgEl('g', {});
+
+        const rect = svgEl('rect', {
+          x: String(position.x),
+          y: String(position.y),
+          width: String(nodeWidth),
+          height: String(nodeHeight),
+          rx: '12',
+          fill: '#ffffff',
+          stroke: '#2b2b2b',
+          'stroke-width': '2'
+        });
+
+        const nameText = svgEl('text', {
+          x: String(position.x + 12),
+          y: String(position.y + 29),
+          'font-size': '15',
+          'font-family': 'Space Grotesk, sans-serif',
+          'font-weight': '700',
+          fill: '#1f2937'
+        });
+        nameText.textContent = truncate(context.name, 22);
+
+        const ownerText = svgEl('text', {
+          x: String(position.x + 12),
+          y: String(position.y + 51),
+          'font-size': '12',
+          'font-family': 'Manrope, sans-serif',
+          fill: '#4b5563'
+        });
+        ownerText.textContent = `Owner: ${truncate(context.owner, 24)}`;
+
+        const tagText = svgEl('text', {
+          x: String(position.x + 12),
+          y: String(position.y + 71),
+          'font-size': '11',
+          'font-family': 'Manrope, sans-serif',
+          fill: '#6b7280'
+        });
+        tagText.textContent = 'Bounded context';
+
+        group.appendChild(rect);
+        group.appendChild(nameText);
+        group.appendChild(ownerText);
+        group.appendChild(tagText);
+
+        mapSvg.appendChild(group);
+      });
+    }
+
+    function renderAll() {
+      renderContextOptions();
+      renderContextsTable();
+      renderRelationshipsTable();
+      renderMap();
+      updateDefinitionsOutput();
+    }
+
+    contextForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearMessage(contextMsg);
+
+      const name = contextNameInput.value.trim();
+      const owner = contextOwnerInput.value.trim();
+      if (!name || !owner) {
+        setMessage(contextMsg, 'Context name and ownership are required.');
+        return;
+      }
+
+      const exists = state.contexts.some((context) => context.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        setMessage(contextMsg, 'Context already exists.');
+        return;
+      }
+
+      state.contexts.push({
+        id: createId('ctx'),
+        name,
+        owner
+      });
+
+      contextForm.reset();
+      renderAll();
+    });
+
+    relationshipForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearMessage(relationshipMsg);
+
+      if (state.contexts.length < 2) {
+        setMessage(relationshipMsg, 'Add at least two contexts first.');
+        return;
+      }
+
+      const upstreamId = upstreamSelect.value;
+      const downstreamId = downstreamSelect.value;
+      const relationOwner = relationshipOwnerInput.value.trim();
+      const integrationType = integrationValue();
+
+      if (!upstreamId || !downstreamId) {
+        setMessage(relationshipMsg, 'Select both upstream and downstream contexts.');
+        return;
+      }
+
+      if (upstreamId === downstreamId) {
+        setMessage(relationshipMsg, 'Upstream and downstream must be different contexts.');
+        return;
+      }
+
+      if (!integrationType) {
+        setMessage(relationshipMsg, 'Integration type is required.');
+        return;
+      }
+
+      state.relationships.push({
+        id: createId('rel'),
+        upstreamId,
+        downstreamId,
+        integrationType,
+        owner: relationOwner
+      });
+
+      relationshipForm.reset();
+      integrationTypeSelect.value = 'Published language API';
+      customIntegrationWrap.classList.add('hidden');
+      customIntegrationInput.value = '';
+      renderAll();
+    });
+
+    contextsTable.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-context-id]');
+      if (!button) return;
+      const contextId = button.dataset.contextId;
+      state.contexts = state.contexts.filter((context) => context.id !== contextId);
+      state.relationships = state.relationships.filter((relationship) => (
+        relationship.upstreamId !== contextId && relationship.downstreamId !== contextId
+      ));
+      renderAll();
+    });
+
+    relationshipsTable.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-relationship-id]');
+      if (!button) return;
+      const relationshipId = button.dataset.relationshipId;
+      state.relationships = state.relationships.filter((relationship) => relationship.id !== relationshipId);
+      renderAll();
+    });
+
+    integrationTypeSelect.addEventListener('change', () => {
+      const isCustom = integrationTypeSelect.value === 'Custom';
+      customIntegrationWrap.classList.toggle('hidden', !isCustom);
+      if (!isCustom) customIntegrationInput.value = '';
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const text = definitionsOutput.value;
+      if (!text) return;
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          await navigator.clipboard.writeText(text);
+        } else {
+          window.prompt('Copy definitions:', text);
+        }
+        setMessage(definitionsMsg, 'Definitions copied.');
+      } catch (_error) {
+        setMessage(definitionsMsg, 'Could not copy automatically.');
+      }
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const content = definitionsOutput.value;
+      if (!content) return;
+      const fileName = `ddd-context-map-${new Date().toISOString().slice(0, 10)}.json`;
+      const blob = new Blob([content], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setMessage(definitionsMsg, `Exported ${fileName}.`);
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>

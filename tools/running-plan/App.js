@@ -12,7 +12,7 @@ function MarathonPrepBuilderApp() {
     sharedPayload && sharedPayload.plan && Array.isArray(sharedPayload.plan)
   );
 
-  const [disclaimerStatus, setDisclaimerStatus] = useState(hasSharedPlan ? "accepted" : "pending");
+  const [disclaimerStatus, setDisclaimerStatus] = useState("pending");
   const [currentStep, setCurrentStep] = useState(hasSharedPlan ? 5 : 1);
 
   const [form, setForm] = useState(() => ({
@@ -277,13 +277,7 @@ function MarathonPrepBuilderApp() {
         href="index.html"
         className="mb-8 inline-flex items-center gap-2 text-[1.2em] text-[#444] no-underline print:hidden"
       >
-        <img
-          src="../back-arrow.svg"
-          alt="Back"
-          width="20"
-          height="20"
-          className="opacity-70"
-        />{" "}
+        <img src="../back-arrow.svg" alt="Back" width="20" height="20" className="opacity-70" />{" "}
         Back
       </a>
 

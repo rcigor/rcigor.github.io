@@ -266,10 +266,7 @@ const PlanResults = function PlanResults({
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="editor-day"
-                    className="mb-1 block text-sm font-semibold text-ink"
-                  >
+                  <label htmlFor="editor-day" className="mb-1 block text-sm font-semibold text-ink">
                     Day
                   </label>
                   <input

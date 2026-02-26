@@ -97,9 +97,11 @@ describe("Marathon builder acceptance flow", () => {
 
     render(React.createElement(MarathonPrepBuilderApp));
 
+    expect(screen.getByText(/important health and safety disclaimer/i)).toBeInTheDocument();
+    acceptDisclaimer();
+
     expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(originalHeading);
     expect(screen.getByText(/event day/i)).toBeInTheDocument();
-    expect(screen.queryByText(/important health and safety disclaimer/i)).not.toBeInTheDocument();
 
     window.history.pushState({}, "", "/");
   });

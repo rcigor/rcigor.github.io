@@ -1430,7 +1430,7 @@ function MarathonPrepBuilderApp() {
     sharedPayload && sharedPayload.plan && Array.isArray(sharedPayload.plan)
   );
 
-  const [disclaimerStatus, setDisclaimerStatus] = useState(hasSharedPlan ? "accepted" : "pending");
+  const [disclaimerStatus, setDisclaimerStatus] = useState("pending");
   const [currentStep, setCurrentStep] = useState(hasSharedPlan ? 5 : 1);
 
   const [form, setForm] = useState(() => ({

@@ -9,13 +9,7 @@ const DisclaimerGate = function DisclaimerGate({ onAccept, onDecline }) {
         href="index.html"
         className="mb-8 inline-flex items-center gap-2 text-[1.2em] text-[#444] no-underline"
       >
-        <img
-          src="../back-arrow.svg"
-          alt="Back"
-          width="20"
-          height="20"
-          className="opacity-70"
-        />{" "}
+        <img src="../back-arrow.svg" alt="Back" width="20" height="20" className="opacity-70" />{" "}
         Back
       </a>
 

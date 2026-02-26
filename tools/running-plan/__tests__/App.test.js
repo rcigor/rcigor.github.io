@@ -56,7 +56,7 @@ describe("MarathonPrepBuilderApp", () => {
     delete window.__RUNNING_PLAN_NAVIGATE__;
   });
 
-  test("loads shared plan from URL params and renders it directly", () => {
+  test("requires disclaimer acceptance before rendering a shared plan from URL params", () => {
     const { MarathonPrepBuilderApp } = loadRunningPlanModules();
     const sharedPayload = {
       v: 1,
@@ -76,9 +76,12 @@ describe("MarathonPrepBuilderApp", () => {
 
     render(React.createElement(MarathonPrepBuilderApp));
 
+    expect(screen.getByText(/important health and safety disclaimer/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: /accept and continue/i }));
+
     expect(screen.getByText("Shared Test Plan")).toBeInTheDocument();
     expect(screen.getByText(/event day/i)).toBeInTheDocument();
-    expect(screen.queryByText(/important health and safety disclaimer/i)).not.toBeInTheDocument();
 
     window.history.pushState({}, "", "/");
   });

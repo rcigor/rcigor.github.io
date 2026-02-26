@@ -1420,8 +1420,6 @@ if (typeof module !== "undefined" && module.exports) {
   <script type="text/babel">
 window.RunningPlan = window.RunningPlan || {};
 
-const { useMemo, useState } = React;
-
 function MarathonPrepBuilderApp() {
   const [sharedPayload] = useState(() => {
     if (typeof window === "undefined") return null;

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archive Post - Igor Carreira</title>
+  <meta name="description" content="Archived blog post.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: "#F2C94C",
+            "brand-dark": "#D4AB2B",
+            ink: "#2B2B2B",
+            stone: "#ECECEC",
+            slate: "#6B7280"
+          },
+          fontFamily: {
+            sans: ["Manrope", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <style>
+    .md-content h1, .md-content h2, .md-content h3, .md-content h4 {
+      font-family: "Space Grotesk", sans-serif;
+      color: #1f2937;
+      margin: 1.4rem 0 0.75rem;
+      line-height: 1.2;
+    }
+    .md-content h1 { font-size: 2rem; }
+    .md-content h2 { font-size: 1.5rem; }
+    .md-content h3 { font-size: 1.2rem; }
+    .md-content p, .md-content li, .md-content blockquote {
+      color: #374151;
+      line-height: 1.9;
+      font-size: 1rem;
+    }
+    .md-content ul, .md-content ol {
+      margin: 0.8rem 0 1rem;
+      padding-left: 1.25rem;
+    }
+    .md-content code {
+      background: #f3f4f6;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.35rem;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.9em;
+    }
+    .md-content pre {
+      background: #111827;
+      color: #e5e7eb;
+      border-radius: 0.6rem;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .md-content pre code {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+    }
+    .md-content a {
+      color: #0f172a;
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: #f2c94c;
+      text-underline-offset: 2px;
+    }
+    .md-content blockquote {
+      border-left: 4px solid #f2c94c;
+      margin: 1rem 0;
+      padding: 0.2rem 0 0.2rem 1rem;
+      color: #4b5563;
+      font-style: italic;
+      background: #fffbeb;
+    }
+  </style>
+</head>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back to Blog</a>
+      <h1 id="postTitle" class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Archive Post</h1>
+      <p id="postMeta" class="mt-3 max-w-3xl text-[#d1d5db]">Loading archived post...</p>
+    </div>
+  </header>
+
+  <main class="w-full bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+    <article class="mx-auto w-full max-w-4xl rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)] sm:p-8">
+      <div class="mb-5 text-sm text-[#6b7280]">Originally appeared on my previous blog (now archived).</div>
+      <div id="postContent" class="md-content">
+        <p class="m-0 text-[#4b5563]">Loading content...</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Aveiro, Portugal - &copy; 2026 Igor Carreira. All rights reserved.</p>
+  </footer>
+
+  <script>
+    window.blogArchiveConfig = window.blogArchiveConfig || {
+      githubTreeUrl: "https://github.com/rcigor/rcigor.github.io/tree/main/blog/archive"
+    };
+
+    function parseArchiveFilename(fileName) {
+      const bare = String(fileName || "")
+        .replace(/\.(md|markdown)$/i, "")
+        .trim();
+
+      const prefixDate = bare.match(/^(\d{4}[-_]\d{2}[-_]\d{2})_(.+)$/i);
+      const suffixDate = bare.match(/^(.+)_((?:\d{4}[-_]\d{2}[-_]\d{2}))$/i);
+
+      let titlePart = bare;
+      let dateToken = null;
+
+      if (prefixDate) {
+        dateToken = prefixDate[1];
+        titlePart = prefixDate[2];
+      } else if (suffixDate) {
+        titlePart = suffixDate[1];
+        dateToken = suffixDate[2];
+      }
+
+      const normalizedDate = dateToken ? dateToken.replace(/_/g, "-") : null;
+      const dateObj = normalizedDate ? new Date(`${normalizedDate}T00:00:00`) : null;
+      const hasValidDate = Boolean(dateObj && !Number.isNaN(dateObj.getTime()));
+
+      const title = titlePart
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+
+      return {
+        title: title || bare || "Untitled archive post",
+        dateLabel: hasValidDate
+          ? dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+          : "Date unknown"
+      };
+    }
+
+    function getArchiveFileFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const file = params.get("file");
+      if (!file) return null;
+
+      const normalized = decodeURIComponent(file).trim();
+      const isValid = /^[A-Za-z0-9._-]+\.(md|markdown)$/i.test(normalized);
+      return isValid ? normalized : null;
+    }
+
+    function parseGithubTreeUrl(treeUrl) {
+      const source = String(treeUrl || "").trim();
+      const match = source.match(
+        /^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/tree\/([^\/]+)\/(.+?)\/?$/i
+      );
+      if (!match) return null;
+
+      return {
+        owner: decodeURIComponent(match[1]),
+        repo: decodeURIComponent(match[2]),
+        branch: decodeURIComponent(match[3]),
+        path: match[4]
+          .split("/")
+          .map((part) => decodeURIComponent(part))
+          .join("/")
+      };
+    }
+
+    function decodeBase64Utf8(base64Value) {
+      const normalized = String(base64Value || "").replace(/\n/g, "");
+      const binary = atob(normalized);
+      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+      if (typeof TextDecoder !== "undefined") {
+        return new TextDecoder("utf-8").decode(bytes);
+      }
+
+      return decodeURIComponent(
+        Array.from(bytes)
+          .map((b) => `%${b.toString(16).padStart(2, "0")}`)
+          .join("")
+      );
+    }
+
+    async function fetchArchiveMarkdown(fileName, treeUrl) {
+      const parsed = parseGithubTreeUrl(treeUrl);
+      if (!parsed) {
+        throw new Error("Invalid archive source URL");
+      }
+
+      const fullPath = `${parsed.path}/${fileName}`
+        .split("/")
+        .map((part) => encodeURIComponent(part))
+        .join("/");
+      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(parsed.owner)}/${encodeURIComponent(parsed.repo)}/contents/${fullPath}?ref=${encodeURIComponent(parsed.branch)}`;
+
+      const response = await fetch(apiUrl, {
+        headers: { Accept: "application/vnd.github+json" }
+      });
+      if (!response.ok) {
+        throw new Error(`GitHub API ${response.status}`);
+      }
+
+      const payload = await response.json();
+      if (!payload || payload.type !== "file" || payload.encoding !== "base64") {
+        throw new Error("Unexpected archive response");
+      }
+
+      return decodeBase64Utf8(payload.content);
+    }
+
+    async function loadArchivePost() {
+      const titleEl = document.getElementById("postTitle");
+      const metaEl = document.getElementById("postMeta");
+      const contentEl = document.getElementById("postContent");
+      const cfg = window.blogArchiveConfig || {};
+      const githubTreeUrl = String(cfg.githubTreeUrl || "");
+
+      const fileName = getArchiveFileFromQuery();
+      if (!fileName) {
+        titleEl.textContent = "Archive Post Not Found";
+        metaEl.textContent = "Missing or invalid file parameter.";
+        contentEl.innerHTML = '<p class="m-0 text-[#4b5563]">Use a link from the blog archive list to open a post.</p>';
+        return;
+      }
+
+      const parsed = parseArchiveFilename(fileName);
+      titleEl.textContent = parsed.title;
+      metaEl.textContent = parsed.dateLabel;
+      document.title = `${parsed.title} - Archive - Igor Carreira`;
+
+      try {
+        const markdown = await fetchArchiveMarkdown(fileName, githubTreeUrl);
+        if (typeof marked === "undefined") {
+          contentEl.textContent = markdown;
+          return;
+        }
+
+        marked.setOptions({
+          gfm: true,
+          breaks: true
+        });
+
+        const unsafeHtml = marked.parse(markdown);
+        const safeHtml =
+          typeof DOMPurify !== "undefined"
+            ? DOMPurify.sanitize(unsafeHtml, { USE_PROFILES: { html: true } })
+            : unsafeHtml;
+        contentEl.innerHTML = safeHtml;
+      } catch (error) {
+        contentEl.innerHTML = `<p class="m-0 text-[#4b5563]">Could not load this archived post (${error.message || "unknown error"}).</p>`;
+      }
+    }
+
+    loadArchivePost();
+  </script>
+</body>
+</html>

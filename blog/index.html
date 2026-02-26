@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - Igor Carreira</title>
+  <meta name="description" content="Posts on engineering leadership, AI-first delivery, architecture, and XP/DDD practices.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: "#F2C94C",
+            "brand-dark": "#D4AB2B",
+            ink: "#2B2B2B",
+            stone: "#ECECEC",
+            slate: "#6B7280"
+          },
+          fontFamily: {
+            sans: ["Manrope", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="m-0 min-h-screen bg-stone font-sans text-ink antialiased">
+  <header class="w-full border-b-4 border-brand bg-ink text-white">
+    <div class="px-6 py-8 sm:px-10 lg:px-16">
+      <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#e5e7eb] no-underline transition hover:text-brand">&larr; Back</a>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Blog</h1>
+      <p class="mt-3 max-w-3xl text-[#d1d5db]">Writing about engineering leadership, AI-first delivery, architecture simplicity, and practical XP/DDD.</p>
+    </div>
+  </header>
+
+  <main class="w-full bg-[#f3f3f3] px-6 py-10 sm:px-10 lg:px-16">
+    <section class="mb-8">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <h2 class="font-display text-2xl font-bold text-ink">Latest</h2>
+        <span class="inline-flex rounded-full border border-[#d6d6d6] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#5f6368]">1 post</span>
+      </div>
+
+      <a href="the-handover-two-years-one-ai-revolution.html" class="group block rounded-xl border-2 border-[#2b2b2b] bg-white p-6 text-[#1f1f1f] no-underline transition hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
+          <span>18 Feb 2026</span>
+          <span class="h-1 w-1 rounded-full bg-[#b6bbc2]"></span>
+          <span>Engineering</span>
+          <span class="h-1 w-1 rounded-full bg-[#b6bbc2]"></span>
+          <span>AI + XP</span>
+        </div>
+        <h3 class="mt-3 font-display text-2xl font-bold">Handing Over the Keys.</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-[#374151]">Two years of AI-assisted software delivery, what changed in day-to-day engineering, and why XP intent still matters.</p>
+        <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#2b2b2b] transition group-hover:text-[#1f1f1f]">Read post <span aria-hidden="true">↗</span></span>
+      </a>
+    </section>
+
+    <section class="rounded-xl border border-[#d2d2d2] bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <h2 class="font-display text-2xl font-bold text-ink">Archive</h2>
+        <span class="inline-flex rounded-full border border-[#8a6412] bg-gradient-to-r from-[#ffe59c] via-[#ffd86a] to-[#f3bd2d] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#3b2a04] shadow-[0_8px_20px_rgba(195,150,35,0.35)] ring-1 ring-white/70">Imported from an archived blog</span>
+      </div>
+
+      <div class="mt-5 rounded-lg border border-dashed border-[#cfd4dc] bg-[#fafafa] p-4">
+        <div id="archiveStatus" class="text-sm text-[#4b5563]">Loading archive posts...</div>
+        <ul id="archiveList" class="mt-3 mb-0 space-y-2 pl-5 text-sm text-[#374151]"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="w-full border-t-4 border-brand bg-ink px-6 py-6 sm:px-10 lg:px-16">
+    <p class="m-0 text-sm text-[#c7c7c7]">Aveiro, Portugal - &copy; 2026 Igor Carreira. All rights reserved.</p>
+  </footer>
+
+  <script>
+    window.blogArchiveConfig = window.blogArchiveConfig || {
+      githubTreeUrl: "https://github.com/rcigor/rcigor.github.io/tree/main/blog/archive"
+    };
+
+    function parseArchiveFilename(fileName) {
+      const bare = String(fileName || "")
+        .replace(/\.(md|markdown)$/i, "")
+        .trim();
+
+      const prefixDate = bare.match(/^(\d{4}[-_]\d{2}[-_]\d{2})_(.+)$/i);
+      const suffixDate = bare.match(/^(.+)_((?:\d{4}[-_]\d{2}[-_]\d{2}))$/i);
+
+      let titlePart = bare;
+      let dateToken = null;
+
+      if (prefixDate) {
+        dateToken = prefixDate[1];
+        titlePart = prefixDate[2];
+      } else if (suffixDate) {
+        titlePart = suffixDate[1];
+        dateToken = suffixDate[2];
+      }
+
+      const normalizedDate = dateToken ? dateToken.replace(/_/g, "-") : null;
+      const dateObj = normalizedDate ? new Date(`${normalizedDate}T00:00:00`) : null;
+      const hasValidDate = Boolean(dateObj && !Number.isNaN(dateObj.getTime()));
+
+      const title = titlePart
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+
+      return {
+        title: title || bare,
+        date: hasValidDate ? dateObj : null,
+        dateLabel: hasValidDate
+          ? dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+          : "Date unknown"
+      };
+    }
+
+    function parseGithubTreeUrl(treeUrl) {
+      const source = String(treeUrl || "").trim();
+      const match = source.match(
+        /^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/tree\/([^\/]+)\/(.+?)\/?$/i
+      );
+      if (!match) return null;
+
+      return {
+        owner: decodeURIComponent(match[1]),
+        repo: decodeURIComponent(match[2]),
+        branch: decodeURIComponent(match[3]),
+        path: match[4]
+          .split("/")
+          .map((part) => decodeURIComponent(part))
+          .join("/")
+      };
+    }
+
+    async function getArchiveFilesFromGithubTreeUrl(treeUrl) {
+      const parsed = parseGithubTreeUrl(treeUrl);
+      if (!parsed) {
+        throw new Error("Invalid GitHub archive URL");
+      }
+
+      const path = parsed.path
+        .split("/")
+        .map((part) => encodeURIComponent(part))
+        .join("/");
+      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(parsed.owner)}/${encodeURIComponent(parsed.repo)}/contents/${path}?ref=${encodeURIComponent(parsed.branch)}`;
+
+      const response = await fetch(apiUrl, {
+        headers: { Accept: "application/vnd.github+json" }
+      });
+      if (!response.ok) {
+        throw new Error(`GitHub API ${response.status}`);
+      }
+
+      const items = await response.json();
+      return (Array.isArray(items) ? items : [])
+        .filter((item) => item.type === "file" && /\.(md|markdown)$/i.test(item.name))
+        .filter((item) => !/^readme\.(md|markdown)$/i.test(item.name))
+        .map((item) => item.name);
+    }
+
+    async function loadArchivePosts() {
+      const statusEl = document.getElementById("archiveStatus");
+      const listEl = document.getElementById("archiveList");
+      const cfg = window.blogArchiveConfig || {};
+
+      if (!statusEl || !listEl) return;
+      const githubTreeUrl = String(cfg.githubTreeUrl || "");
+
+      try {
+        const files = await getArchiveFilesFromGithubTreeUrl(githubTreeUrl);
+        const posts = files
+          .map((fileName) => {
+            const parsed = parseArchiveFilename(fileName);
+            return {
+              name: fileName,
+              href: `archive-post.html?file=${encodeURIComponent(fileName)}`,
+              title: parsed.title,
+              date: parsed.date,
+              dateLabel: parsed.dateLabel
+            };
+          })
+          .sort((a, b) => {
+            if (a.date && b.date) return b.date - a.date;
+            if (a.date) return -1;
+            if (b.date) return 1;
+            return a.title.localeCompare(b.title);
+          });
+
+        if (posts.length === 0) {
+          statusEl.textContent = "No archive posts found yet in configured GitHub archive path.";
+          return;
+        }
+
+        statusEl.textContent = `${posts.length} archived post${posts.length === 1 ? "" : "s"} loaded from GitHub archive source.`;
+
+        listEl.innerHTML = posts
+          .map(
+            (post) =>
+              `<li><a class="font-semibold text-[#1f1f1f] hover:text-[#111827]" href="${post.href}">${post.title}</a> <span class="text-[#6b7280]">(${post.dateLabel})</span></li>`
+          )
+          .join("");
+      } catch (error) {
+        statusEl.textContent = `Could not load archive automatically right now (${error.message || "unknown error"}).`;
+        listEl.innerHTML =
+          '<li class="text-[#6b7280]">Check <code>window.blogArchiveConfig.githubTreeUrl</code>, file naming convention, and GitHub API rate limits.</li>';
+      }
+    }
+
+    loadArchivePosts();
+  </script>
+</body>
+</html>

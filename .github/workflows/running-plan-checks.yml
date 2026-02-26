@@ -1,0 +1,39 @@
+name: Running Plan Checks
+
+on:
+  push:
+    paths:
+      - 'tools/running-plan/**'
+      - '.github/workflows/running-plan-checks.yml'
+  pull_request:
+    paths:
+      - 'tools/running-plan/**'
+      - '.github/workflows/running-plan-checks.yml'
+
+jobs:
+  test-and-format:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tools/running-plan
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/running-plan/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: Jest tests
+        run: npm test -- --runInBand

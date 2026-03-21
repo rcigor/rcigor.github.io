@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VS Code, Cursor, Codex, and Claude Code: Comparing the Trade-offs in March 2026 - Igor Carreira</title>
+  <meta name="description" content="A senior-engineer comparison of Cursor, VS Code, Codex App, and Claude Code: what each tool is really optimising for, where it creates leverage, and where it adds drag.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://igorcarreira.pt/blog/vs-code-cursor-codex-claude-code-march-2026.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="VS Code, Cursor, Codex, and Claude Code: Comparing the Trade-offs in March 2026">
+  <meta property="og:description" content="A senior-engineer comparison of Cursor, VS Code, Codex App, and Claude Code: what each tool is really optimising for, where it creates leverage, and where it adds drag.">
+  <meta property="og:url" content="https://igorcarreira.pt/blog/vs-code-cursor-codex-claude-code-march-2026.html">
+  <meta property="og:site_name" content="Igor Carreira">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VS Code, Cursor, Codex, and Claude Code: Comparing the Trade-offs in March 2026">
+  <meta name="twitter:description" content="A senior-engineer comparison of Cursor, VS Code, Codex App, and Claude Code: what each tool is really optimising for, where it creates leverage, and where it adds drag.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: "#F2C94C",
+            "brand-dark": "#D4AB2B",
+            ink: "#2B2B2B",
+            stone: "#ECECEC",
+            slate: "#6B7280"
+          },
+          fontFamily: {
+            sans: ["Manrope", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "VS Code, Cursor, Codex, and Claude Code: Comparing the Trade-offs in March 2026",
+    "description": "A senior-engineer comparison of Cursor, VS Code, Codex App, and Claude Code: what each tool is really optimising for, where it creates leverage, and where it adds drag.",
+    "author": {
+      "@type": "Person",
+      "name": "Igor Carreira",
+      "url": "https://igorcarreira.pt/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Igor Carreira"
+    },
+    "datePublished": "2026-03-21",
+    "dateModified": "2026-03-21",
+    "mainEntityOfPage": "https://igorcarreira.pt/blog/vs-code-cursor-codex-claude-code-march-2026.html",
+    "keywords": [
+      "Cursor",
+      "VS Code",
+      "Codex App",
+      "Claude Code",
+      "AI coding tools",
+      "developer productivity"
+    ]
+  }
+  </script>
+</head>
+<body class="m-0 min-h-screen bg-stone px-4 py-8 font-sans text-ink antialiased sm:px-8">
+  <div class="mx-auto w-full max-w-[920px] rounded-xl border border-[#d2d2d2] bg-white px-6 py-8 text-left shadow-[0_10px_24px_rgba(0,0,0,0.08)] sm:px-8">
+    <header class="mb-10">
+      <h1 class="mb-3 text-4xl font-bold sm:text-5xl">VS Code, Cursor, Codex, and Claude Code: Comparing the Trade-offs in March 2026</h1>
+      <div class="mb-8 flex flex-wrap items-center justify-between gap-3 text-[#444]">
+        <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#4b5563] no-underline transition hover:text-ink">&larr; Back to Blog</a>
+        <p class="m-0 text-sm">Sat 21st Mar 2026</p>
+      </div>
+    </header>
+
+    <article class="space-y-6 text-base leading-8 text-gray-800">
+      <p class="m-0 text-sm italic text-[#5b6168]">Note: this article was proofread by AI.</p>
+
+      <p class="m-0">I have little patience for tool discourse that sounds clever but says nothing. Most comparisons in this space collapse into feature bingo: autocomplete, chat, agents, terminal, IDE, privacy, done. That is not how experienced engineers choose tools.</p>
+
+      <p class="m-0">Senior people usually care about something else: where control sits, how fast trust is earned, how much workflow debt gets introduced, and whether the tool makes the team calmer or more chaotic. That is the lens here.</p>
+
+      <div class="rounded-lg border border-[#e6d19a] bg-[#fff8e8] p-4 text-[15px] leading-7 text-[#3f3f46]">
+        <p class="m-0"><strong>TLDR:</strong> VS Code is still the control baseline. Cursor is the best AI-native editor surface. Claude Code is the strongest terminal-native agent. Codex App has become one of the most interesting supervision surfaces for agent work, even if I still would not treat it as a full replacement for VS Code or Cursor.</p>
+      </div>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">What Experts Should Actually Compare</h2>
+      <ul class="m-0 list-disc space-y-2 pl-6">
+        <li><strong>Where judgment lives:</strong> editor, terminal, or agent thread.</li>
+        <li><strong>How much ceremony is introduced:</strong> more leverage is good, more process is not.</li>
+        <li><strong>How easy it is to recover:</strong> bad AI output is tolerable, bad workflow design is expensive.</li>
+        <li><strong>How the tool fits existing habits:</strong> forcing a team into a new posture is usually the hidden cost.</li>
+        <li><strong>How governance works in practice:</strong> not the marketing page, the real operating model.</li>
+      </ul>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">VS Code: The Market Standard Because It Earned It</h2>
+      <p class="m-0">VS Code is not exciting anymore, and that is precisely why it matters. It became the default editor for a very simple reason: it got the fundamentals right. Fast enough, flexible enough, cross-platform, and extensible without forcing people into a heavyweight IDE mindset.</p>
+      <p class="m-0">This is also where Microsoft deserves credit. VS Code was not built as a toy shell around extensions. It sits on a serious platform strategy: Monaco as the editor core, Electron for the desktop shell, a disciplined release cadence, and deep integration with the TypeScript toolchain. If you write JavaScript or TypeScript, you are effectively standing on Microsoft infrastructure whether you think about it or not.</p>
+      <p class="m-0">The other reason VS Code won is market pragmatism. It gave frontend people, backend people, cloud engineers, and infra engineers a common workbench without asking them to abandon their habits. That matters more than fancy demos. Tools win when they reduce coordination friction across teams, not when they impress in a keynote.</p>
+      <h3 class="m-0 pt-2 text-xl font-bold text-ink">History</h3>
+      <p class="m-0">VS Code was announced at Microsoft Build 2015 as a free, cross-platform editor aimed at everyday development rather than the full Visual Studio audience. That positioning was smart. It was not trying to replace everything. It was trying to become the default place where code gets touched.</p>
+      <p class="m-0">Its roots go back to the Monaco editor effort and the browser-based workbench ideas around Visual Studio Online. That lineage matters because it explains why VS Code always felt more like a platform than a product. It was built by people who already understood code editing, browser tooling, and developer ergonomics at scale.</p>
+      <p class="m-0">By November 2015, it had gone Beta, opened up extensions and the Marketplace, and moved the codebase to open source on GitHub. In April 2016 it reached 1.0. After that, adoption stopped being a curiosity and became a flywheel.</p>
+      <p class="m-0">The Microsoft and TypeScript connection is central to the story. The TypeScript team owns the language service that powers the TypeScript and JavaScript experience in VS Code, so the editor and the tooling evolved together. That tight loop is one reason VS Code kept compounding usage, climbing from 50.7% in Stack Overflow's 2019 survey to 74% in 2024. On the evidence we have, yes, it is the most widely used IDE/editor in the market today.</p>
+      <p class="m-0">Best fit: teams that want the safest long-term baseline, the widest ecosystem, and the least workflow disruption.</p>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Cursor: The Best Case for an AI-Native Editor</h2>
+      <p class="m-0">Cursor matters because it does not pretend AI is just another extension button in a sidebar. It assumes the editor itself should be redesigned around AI-assisted work. That is the right thesis if you believe code generation, refactoring, and contextual edits should sit directly in the main surface where engineers already think.</p>
+      <p class="m-0">This is why the VS Code comparison can be misleading. Cursor is not just \"VS Code plus some AI\". It is a fork making a product bet: tighter AI integration is more important than staying perfectly aligned with upstream release rhythm. Sometimes that trade is worth it. Sometimes it is not. But at least it is an honest product decision.</p>
+      <p class="m-0">For strong engineers, the appeal is obvious. You keep familiar editor ergonomics, but the AI feels closer to the act of editing rather than bolted on. The risk is also obvious. Once you fork the editor, you inherit a product tax: release lag, compatibility decisions, and trust questions that do not exist to the same degree in baseline VS Code.</p>
+      <h3 class="m-0 pt-2 text-xl font-bold text-ink">History</h3>
+      <p class="m-0">Cursor shipped early releases in 2023 and moved onto a VSCodium-based fork, leaving behind an earlier CodeMirror approach. That move was important. It signalled that the team wanted to compete seriously in the editor layer, not just in a chat overlay.</p>
+      <p class="m-0">As it matured, Cursor leaned hard into the \"easy migration\" story: bring your extensions, settings, and keybindings across and keep moving. That lowered switching cost dramatically, which is one of the reasons it became the most credible AI-native editor rather than another flashy experiment.</p>
+      <p class="m-0">Best fit: strong individual contributors and product engineering teams that want tighter AI integration without abandoning the VS Code mental model.</p>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Codex App: Better Than The Skeptics Think</h2>
+      <p class="m-0">Codex App is not trying to be your editor. It is trying to be a command center for agent work, and on its own terms it is very well judged. Threads, worktrees, diff review, sandboxed execution, and explicit permission boundaries give it a level of operational clarity that many AI coding products still lack.</p>
+      <p class="m-0">The reason I have warmed to it is simple: it creates a cleaner supervision model than most agent tooling. You can let the agent work, inspect what changed, and keep the human in charge without turning the whole exercise into a mystery box. That is valuable. I still do not see it replacing VS Code or Cursor as the main coding surface, but I do increasingly see it as a strong companion surface around them.</p>
+      <p class="m-0">Where I remain careful is multi-agent enthusiasm. The product is good enough that it can tempt people into doing more orchestration than they actually need. My default stance is still this: if one good engineer with one good agent can do the job cleanly, adding more agents is usually workflow theatre. Use multi-agent only when the task is naturally parallel, the scope boundaries are clear, and the review loop remains human-owned from start to finish.</p>
+      <h3 class="m-0 pt-2 text-xl font-bold text-ink">History</h3>
+      <p class="m-0">Codex launched in May 2025 as a cloud-based software engineering agent in research preview form. The proposition was clear from the start: give the model a sandbox, a repository, and a concrete task, then let it work with a level of autonomy beyond basic code completion.</p>
+      <p class="m-0">In February 2026, OpenAI introduced the Codex desktop app and shifted the story from a remote agent experiment to a practical workstation for agent-driven development. That matters because it moved Codex closer to daily engineering flow, especially for people who want to supervise diffs, permissions, and task isolation more explicitly.</p>
+      <p class="m-0">Best fit: engineers and teams that want a serious supervision surface around agent work without pretending the agent should become the whole workflow. It fits best as a companion to VS Code or Cursor, especially when the work benefits from task isolation, reviewable diffs, and explicit permission boundaries.</p>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Minimal Framework for Multi-Agent Work</h2>
+      <p class="m-0">If you are going to use multi-agent workflows, keep the framework boring. Boring is good here. Boring means operable.</p>
+      <ul class="m-0 list-disc space-y-2 pl-6">
+        <li><strong>One accountable owner:</strong> one human defines scope, approves diffs, and decides when to stop.</li>
+        <li><strong>One or two agents max:</strong> beyond that, coordination cost rises faster than useful throughput in most real teams.</li>
+        <li><strong>Hard boundaries:</strong> explicit repo areas, timebox, expected outputs, and stop conditions.</li>
+        <li><strong>Checkpoint review:</strong> inspect intermediate diffs, not only the final result.</li>
+        <li><strong>Cost discipline:</strong> if you cannot explain the ROI in one sentence, do not run the workflow.</li>
+        <li><strong>No autonomous release path yet:</strong> agent output can inform delivery, but not ship autonomously until we have a much more solid verification frameworks. I am still in the process of figuring out what that framework should precisely look like in practice for my current projects, but it will certainly include very strong automated checks, explicit risk classification, traceable evaluation criteria, human sign-off at the right points, and a stronger harness engineering discipline around release confidence.</li>
+      </ul>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Where Multi-Agent Work Is Actually Worth It</h2>
+      <ul class="m-0 list-disc space-y-2 pl-6">
+        <li><strong>Parallel discovery:</strong> one agent reads release notes while another maps code impact.</li>
+        <li><strong>Large, mechanical refactors:</strong> repeated edits with strong automated checks.</li>
+        <li><strong>Migration preparation:</strong> dependency audits, breaking-change summaries, and option comparisons.</li>
+        <li><strong>Agentic QA support:</strong> generating regression checklists, identifying impact areas, drafting tests, and triaging failures while a human still owns release confidence.</li>
+        <li><strong>Test groundwork:</strong> scaffolding broad coverage while the human focuses on the tricky business logic.</li>
+        <li><strong>Documentation digestion:</strong> turning sprawling module knowledge into something reviewable.</li>
+      </ul>
+      <p class="m-0">A practical example might be a payment SDK upgrade in a monorepo, but only if the change is broad and mostly mechanical. In that case, one agent can read release notes and build the migration checklist while another prepares the obvious code updates in the known affected packages, with the human reviewing the diffs, validating scope, and running the integration checks. If the research is likely to change the implementation approach, I would not run those in parallel. I would do research first, checkpoint with a human, and only then move to implementation.</p>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Claude Code: The Best Fit for Terminal-Native Engineers</h2>
+      <p class="m-0">Claude Code makes the strongest case for a terminal-first agent. If your natural habitat is shell, git, scripts, and CI, it feels aligned with how real work already happens. That matters. Good tools should respect the craft posture of the engineer using them.</p>
+      <p class="m-0">The important distinction versus editor-first tools is that Claude Code is not trying to make the IDE the center of gravity. It treats the terminal as the operating surface and the IDE as a useful bridge when needed. For experienced engineers, that often feels cleaner because it keeps the workflow closer to the actual source of truth: repository state, commands, diffs, tests, and automation.</p>
+      <p class="m-0">The trade-off is straightforward. If your team thinks visually inside the editor and wants AI woven into every edit gesture, Cursor will feel more natural. If your team works through command lines, branches, and scripts, Claude Code can feel more honest and less ornamental.</p>
+      <h3 class="m-0 pt-2 text-xl font-bold text-ink">History</h3>
+      <p class="m-0">Anthropic introduced Claude in March 2023 as a general-purpose AI assistant for chat and API use, with coding clearly in scope even before dedicated developer tooling existed.</p>
+      <p class="m-0">Claude Code emerged later as Anthropic's explicit move into agentic software development, designed to read codebases, edit files, run commands, and connect across terminal, IDE, desktop, and web surfaces. By 2025, Anthropic was speaking about it directly in a developer-tooling context rather than as a side effect of a general model.</p>
+      <p class="m-0">Best fit: engineers and teams whose workflow is fundamentally terminal-native and automation-heavy.</p>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Side-by-Side Snapshot</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-[15px]">
+          <thead>
+            <tr class="border-b border-[#e5e7eb] bg-[#f8fafc] text-[#374151]">
+              <th class="p-3 font-semibold">Tool</th>
+              <th class="p-3 font-semibold">What it is really optimising for</th>
+              <th class="p-3 font-semibold">What can go wrong</th>
+              <th class="p-3 font-semibold">My take</th>
+            </tr>
+          </thead>
+          <tbody class="text-[#111827]">
+            <tr class="border-b border-[#e5e7eb]">
+              <td class="p-3 font-semibold">VS Code</td>
+              <td class="p-3">Editor stability, ecosystem breadth, and minimal workflow disruption.</td>
+              <td class="p-3">AI can end up fragmented across extensions and vendors.</td>
+              <td class="p-3">Still the safest default for most serious teams.</td>
+            </tr>
+            <tr class="border-b border-[#e5e7eb]">
+              <td class="p-3 font-semibold">Cursor</td>
+              <td class="p-3">Deep AI integration in the editing surface itself.</td>
+              <td class="p-3">Fork economics: trust, release lag, and product coupling.</td>
+              <td class="p-3">The strongest AI-native editor right now.</td>
+            </tr>
+            <tr class="border-b border-[#e5e7eb]">
+              <td class="p-3 font-semibold">Codex App</td>
+              <td class="p-3">Task orchestration, isolation, and human-supervised agent execution.</td>
+              <td class="p-3">Too much ceremony if used for work that is not naturally parallel.</td>
+              <td class="p-3">A very strong companion surface, not a full editor replacement.</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">Claude Code</td>
+              <td class="p-3">Terminal-native agent flow with optional IDE bridges.</td>
+              <td class="p-3">Can feel less fluid for editor-centric teams.</td>
+              <td class="p-3">Very compelling if your real workflow already lives in the shell.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">If I Had To Recommend One Path</h2>
+      <p class="m-0">For most teams, I would start with VS Code as the control baseline and layer AI carefully. If the team wants tighter AI in the editor and is comfortable with a fork, evaluate Cursor seriously. If the team is command-line heavy, Claude Code deserves strong consideration. And if the team wants a cleaner way to supervise agent work around the editor, Codex App is now strong enough that I would put it in the conversation.</p>
+
+      <p class="m-0">The main mistake I see in this space is treating more AI surface area as automatic progress. It is not. The best setup is the one that increases throughput without degrading judgment. That is the bar.</p>
+
+      <h2 class="m-0 pt-4 text-2xl font-bold text-ink">Sources</h2>
+      <ul class="m-0 list-disc space-y-2 pl-6 text-[15px]">
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">Visual Studio Code home</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://code.visualstudio.com/blogs/2016/04/14/vscode-1.0/" target="_blank" rel="noopener noreferrer">VS Code 1.0 announcement</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://code.visualstudio.com/docs/editor/extension-marketplace" target="_blank" rel="noopener noreferrer">VS Code Extension Marketplace docs</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://survey.stackoverflow.co/2019/" target="_blank" rel="noopener noreferrer">Stack Overflow Developer Survey 2019</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://survey.stackoverflow.co/2024/technology" target="_blank" rel="noopener noreferrer">Stack Overflow Developer Survey 2024 technology results</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://docs.cursor.com/en/guides/migration/vscode" target="_blank" rel="noopener noreferrer">Cursor migration guide</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://openai.com/index/introducing-the-codex-app/" target="_blank" rel="noopener noreferrer">OpenAI: Introducing the Codex app</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer">Anthropic: Claude Code overview</a></li>
+        <li><a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://docs.anthropic.com/en/docs/claude-code/ide-integrations" target="_blank" rel="noopener noreferrer">Anthropic: Claude Code IDE integrations</a></li>
+      </ul>
+
+      <div class="rounded-lg border border-[#e6d19a] bg-[#fff8e8] p-4">
+        <p class="m-0 text-[15px] leading-7 text-[#3f3f46]"><strong>Building an AI-first engineering team?</strong> I write about architecture, XP, and delivery practices that keep speed and quality aligned. Connect with me on <a class="font-semibold text-[#111827] underline decoration-[#f2c94c] underline-offset-2" href="https://www.linkedin.com/in/igorcarreira/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.</p>
+      </div>
+    </article>
+
+    <footer class="mt-10 text-sm text-[#666]">
+      <p>&copy; 2026 Igor Carreira. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>
